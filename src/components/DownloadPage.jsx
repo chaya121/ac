@@ -1,6 +1,6 @@
 import React from 'react';
 import { generatePDF } from '../utils/pdfGenerator';
-import * as XLSX from 'xlsx';
+import { utils, writeFile } from 'xlsx';
 
 export default function DownloadPage({ records, onDelete, onLoad, showToast }) {
   const handlePdfDownload = (record) => {
@@ -91,14 +91,14 @@ export default function DownloadPage({ records, onDelete, onLoad, showToast }) {
         });
       });
 
-      const wb = XLSX.utils.book_new();
-      const wsSummary = XLSX.utils.json_to_sheet(summaryData);
-      const wsSteps = XLSX.utils.json_to_sheet(stepsData);
+      const wb = utils.book_new();
+      const wsSummary = utils.json_to_sheet(summaryData);
+      const wsSteps = utils.json_to_sheet(stepsData);
       
-      XLSX.utils.book_append_sheet(wb, wsSummary, 'สรุปใบงานผลิต');
-      XLSX.utils.book_append_sheet(wb, wsSteps, 'ขั้นตอนการเย็บทั้งหมด');
+      utils.book_append_sheet(wb, wsSummary, 'สรุปใบงานผลิต');
+      utils.book_append_sheet(wb, wsSteps, 'ขั้นตอนการเย็บทั้งหมด');
       
-      XLSX.writeFile(wb, 'Apparel_Creations_Database.xlsx');
+      writeFile(wb, 'Apparel_Creations_Database.xlsx');
       showToast('ส่งออกไฟล์ Excel สำเร็จ');
     } catch (err) {
       console.error(err);
