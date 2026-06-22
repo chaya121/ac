@@ -1,4 +1,6 @@
-const API_BASE = '/api';
+const API_BASE = process.env.NODE_ENV === 'production' 
+  ? 'https://apparel-backend-6igk.onrender.com/api'
+  : '/api';
 
 async function request(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
