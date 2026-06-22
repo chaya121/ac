@@ -7,6 +7,7 @@ import StatsPage from './components/StatsPage';
 import MasterPage from './components/MasterPage';
 import PreviewModal from './components/PreviewModal';
 import { api, migrateFromLocalStorage } from './api/client';
+import { Analytics } from "@vercel/analytics/next"
 
 const DEF_STEPS = [];
 
