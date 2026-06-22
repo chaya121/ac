@@ -24,18 +24,18 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true });
 });
 
-app.get('/api/records', (_req, res) => {
+app.get('/api/records', async (_req, res) => {
   try {
-    res.json(getAllRecords());
+    res.json(await getAllRecords());
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch records' });
   }
 });
 
-app.post('/api/records', (req, res) => {
+app.post('/api/records', async (req, res) => {
   try {
-    const record = createRecord(req.body);
+    const record = await createRecord(req.body);
     res.status(201).json(record);
   } catch (err) {
     console.error(err);
@@ -43,24 +43,24 @@ app.post('/api/records', (req, res) => {
   }
 });
 
-app.post('/api/records/bulk', (req, res) => {
+app.post('/api/records/bulk', async (req, res) => {
   try {
     const { records } = req.body;
     if (!Array.isArray(records)) {
       return res.status(400).json({ error: 'records must be an array' });
     }
-    res.json(bulkCreateRecords(records));
+    res.json(await bulkCreateRecords(records));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to import records' });
   }
 });
 
-app.delete('/api/records/:id', (req, res) => {
+app.delete('/api/records/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
     if (!id) return res.status(400).json({ error: 'Invalid id' });
-    const deleted = deleteRecord(id);
+    const deleted = await deleteRecord(id);
     if (!deleted) return res.status(404).json({ error: 'Record not found' });
     res.json({ ok: true });
   } catch (err) {
@@ -69,18 +69,18 @@ app.delete('/api/records/:id', (req, res) => {
   }
 });
 
-app.get('/api/master', (_req, res) => {
+app.get('/api/master', async (_req, res) => {
   try {
-    res.json(getMaster());
+    res.json(await getMaster());
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch master data' });
   }
 });
 
-app.put('/api/master', (req, res) => {
+app.put('/api/master', async (req, res) => {
   try {
-    const data = saveMaster(req.body);
+    const data = await saveMaster(req.body);
     res.json(data);
   } catch (err) {
     console.error(err);
