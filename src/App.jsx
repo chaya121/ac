@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import Header from './components/Header';
 import TabBar from './components/TabBar';
 import FormPage from './components/FormPage';
@@ -7,7 +8,6 @@ import StatsPage from './components/StatsPage';
 import MasterPage from './components/MasterPage';
 import PreviewModal from './components/PreviewModal';
 import { api, migrateFromLocalStorage } from './api/client';
-import { Analytics } from "@vercel/analytics/next"
 
 const DEF_STEPS = [];
 
@@ -355,6 +355,7 @@ export default function App() {
           </div>
         ))}
       </div>
+      <Analytics />
     </div>
   );
 }
