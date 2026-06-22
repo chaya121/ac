@@ -2,7 +2,7 @@ import initSqlJs from 'sql.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import pg from 'pg';
+import mongoose from 'mongoose';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.join(__dirname, '../database');
@@ -15,7 +15,7 @@ if (!fs.existsSync(dataDir)) {
 
 const dbPath = path.join(dataDir, 'app.db');
 let db;
-let pgPool;
+let mongoConnection;
 
 function persist() {
   const data = db.export();
@@ -23,31 +23,27 @@ function persist() {
 }
 
 export async function initDb() {
-  if (databaseType === 'postgresql' && databaseUrl) {
-    // PostgreSQL setup
-    pgPool = new pg.Pool({ connectionString: databaseUrl });
+  if (databaseType === 'mongodb' && databaseUrl) {
+    // MongoDB setup
+    mongoConnection = await mongoose.connect(databaseUrl);
     
-    // Create tables if they don't exist
-    const client = await pgPool.connect();
-    try {
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS records (
-          id INTEGER PRIMARY KEY,
-          data TEXT NOT NULL,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-      `);
-
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS master (
-          id INTEGER PRIMARY KEY CHECK (id = 1),
-          data TEXT NOT NULL
-        )
-      `);
-    } finally {
-      client.release();
-    }
-    return pgPool;
+    // Define schemas
+    const recordSchema = new mongoose.Schema({
+      id: { type: Number, required: true, unique: true },
+      data: { type: Object, required: true },
+      created_at: { type: Date, default: Date.now }
+    });
+    
+    const masterSchema = new mongoose.Schema({
+      id: { type: Number, required: true, unique: true, default: 1 },
+      data: { type: Object, required: true }
+    });
+    
+    // Create models (will create collections if they don't exist)
+    mongoose.model('Record', recordSchema);
+    mongoose.model('Master', masterSchema);
+    
+    return mongoConnection;
   } else {
     // SQLite setup
     const SQL = await initSqlJs();
@@ -80,17 +76,14 @@ export async function initDb() {
 }
 
 export async function getAllRecords() {
-  if (databaseType === 'postgresql' && pgPool) {
-    const client = await pgPool.connect();
-    try {
-      const result = await client.query('SELECT id, data, created_at FROM records ORDER BY id DESC');
-      return result.rows.map(row => ({
-        ...JSON.parse(row.data),
-        id: row.id,
-      }));
-    } finally {
-      client.release();
-    }
+  if (databaseType === 'mongodb' && mongoConnection) {
+    const Record = mongoose.model('Record');
+    const records = await Record.find().sort({ id: -1 });
+    return records.map(record => ({
+      ...record.data,
+      id: record.id,
+      created_at: record.created_at
+    }));
   } else {
     const stmt = db.prepare('SELECT id, data, created_at FROM records ORDER BY id DESC');
     const rows = [];
@@ -108,36 +101,29 @@ export async function getAllRecords() {
 
 export async function createRecord(record) {
   const id = record.id || Date.now();
-  const data = JSON.stringify({ ...record, id });
+  const data = { ...record, id };
   
-  if (databaseType === 'postgresql' && pgPool) {
-    const client = await pgPool.connect();
-    try {
-      await client.query('INSERT INTO records (id, data) VALUES ($1, $2)', [id, data]);
-      return JSON.parse(data);
-    } finally {
-      client.release();
-    }
+  if (databaseType === 'mongodb' && mongoConnection) {
+    const Record = mongoose.model('Record');
+    const newRecord = await Record.create({ id, data });
+    return { ...newRecord.data, id: newRecord.id };
   } else {
-    db.run('INSERT INTO records (id, data) VALUES (?, ?)', [id, data]);
+    const jsonData = JSON.stringify(data);
+    db.run('INSERT INTO records (id, data) VALUES (?, ?)', [id, jsonData]);
     persist();
-    return JSON.parse(data);
+    return data;
   }
 }
 
 export async function bulkCreateRecords(records) {
-  if (databaseType === 'postgresql' && pgPool) {
-    const client = await pgPool.connect();
-    try {
-      for (const record of records) {
-        const id = record.id || Date.now();
-        const data = JSON.stringify({ ...record, id });
-        await client.query('INSERT INTO records (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = $2', [id, data]);
-      }
-      return getAllRecords();
-    } finally {
-      client.release();
+  if (databaseType === 'mongodb' && mongoConnection) {
+    const Record = mongoose.model('Record');
+    for (const record of records) {
+      const id = record.id || Date.now();
+      const data = { ...record, id };
+      await Record.findOneAndUpdate({ id }, { id, data }, { upsert: true, new: true });
     }
+    return getAllRecords();
   } else {
     for (const record of records) {
       const id = record.id || Date.now();
@@ -150,14 +136,10 @@ export async function bulkCreateRecords(records) {
 }
 
 export async function deleteRecord(id) {
-  if (databaseType === 'postgresql' && pgPool) {
-    const client = await pgPool.connect();
-    try {
-      const result = await client.query('DELETE FROM records WHERE id = $1', [id]);
-      return result.rowCount > 0;
-    } finally {
-      client.release();
-    }
+  if (databaseType === 'mongodb' && mongoConnection) {
+    const Record = mongoose.model('Record');
+    const result = await Record.deleteOne({ id });
+    return result.deletedCount > 0;
   } else {
     db.run('DELETE FROM records WHERE id = ?', [id]);
     const changes = db.getRowsModified();
@@ -167,15 +149,10 @@ export async function deleteRecord(id) {
 }
 
 export async function getMaster() {
-  if (databaseType === 'postgresql' && pgPool) {
-    const client = await pgPool.connect();
-    try {
-      const result = await client.query('SELECT data FROM master WHERE id = 1');
-      if (result.rows.length === 0) return null;
-      return JSON.parse(result.rows[0].data);
-    } finally {
-      client.release();
-    }
+  if (databaseType === 'mongodb' && mongoConnection) {
+    const Master = mongoose.model('Master');
+    const master = await Master.findOne({ id: 1 });
+    return master ? master.data : null;
   } else {
     const stmt = db.prepare('SELECT data FROM master WHERE id = 1');
     if (!stmt.step()) {
@@ -189,20 +166,12 @@ export async function getMaster() {
 }
 
 export async function saveMaster(data) {
-  const json = JSON.stringify(data);
-  
-  if (databaseType === 'postgresql' && pgPool) {
-    const client = await pgPool.connect();
-    try {
-      await client.query(`
-        INSERT INTO master (id, data) VALUES (1, $1)
-        ON CONFLICT(id) DO UPDATE SET data = $1
-      `, [json]);
-      return data;
-    } finally {
-      client.release();
-    }
+  if (databaseType === 'mongodb' && mongoConnection) {
+    const Master = mongoose.model('Master');
+    await Master.findOneAndUpdate({ id: 1 }, { id: 1, data }, { upsert: true, new: true });
+    return data;
   } else {
+    const json = JSON.stringify(data);
     db.run(`
       INSERT INTO master (id, data) VALUES (1, ?)
       ON CONFLICT(id) DO UPDATE SET data = excluded.data
