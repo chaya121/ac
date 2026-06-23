@@ -26,10 +26,11 @@ export async function initDb() {
   if (databaseType === 'mongodb' && databaseUrl) {
     // MongoDB setup with SSL/TLS options for Atlas
     mongoConnection = await mongoose.connect(databaseUrl, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
-      tls: true,
-      tlsAllowInvalidCertificates: false
+      ssl: true,
+      retryWrites: true,
+      w: 'majority'
     });
     
     // Define schemas
