@@ -10,6 +10,7 @@ import {
   deleteRecord,
   getMaster,
   saveMaster,
+  clearAllData,
 } from './db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -89,6 +90,16 @@ app.put('/api/master', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to save master data' });
+  }
+});
+
+app.delete('/api/clear', async (_req, res) => {
+  try {
+    const result = await clearAllData();
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to clear database' });
   }
 });
 

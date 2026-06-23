@@ -185,3 +185,40 @@ export async function saveMaster(data) {
     return data;
   }
 }
+
+export async function clearAllData() {
+  if (databaseType === 'mongodb' && mongoConnection) {
+    const Record = mongoose.model('Record');
+    const Master = mongoose.model('Master');
+    
+    const recordCount = await Record.countDocuments();
+    const masterCount = await Master.countDocuments();
+    
+    await Record.deleteMany({});
+    await Master.deleteMany({});
+    
+    return {
+      recordsDeleted: recordCount,
+      masterDeleted: masterCount
+    };
+  } else {
+    const recordStmt = db.prepare('SELECT COUNT(*) as count FROM records');
+    recordStmt.step();
+    const recordCount = recordStmt.getAsObject().count;
+    recordStmt.free();
+    
+    const masterStmt = db.prepare('SELECT COUNT(*) as count FROM master');
+    masterStmt.step();
+    const masterCount = masterStmt.getAsObject().count;
+    masterStmt.free();
+    
+    db.run('DELETE FROM records');
+    db.run('DELETE FROM master');
+    persist();
+    
+    return {
+      recordsDeleted: recordCount,
+      masterDeleted: masterCount
+    };
+  }
+}
