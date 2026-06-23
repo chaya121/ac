@@ -55,7 +55,7 @@ npm run dev
 
 #### Environment Variables บน Render:
 - `DATABASE_TYPE`: `mongodb`
-- `DATABASE_URL`: `mongodb+srv://[USERNAME]:[PASSWORD]@cluster0.[CLUSTER-ID].mongodb.net/?retryWrites=true&w=majority`
+- `DATABASE_URL`: MongoDB Atlas connection string (ติดต่อ admin เพื่อรับค่า)
 - `NODE_ENV`: `production`
 - `FRONTEND_URL`: `https://apparel01.vercel.app`
 
