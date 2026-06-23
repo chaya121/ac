@@ -24,8 +24,13 @@ function persist() {
 
 export async function initDb() {
   if (databaseType === 'mongodb' && databaseUrl) {
-    // MongoDB setup
-    mongoConnection = await mongoose.connect(databaseUrl);
+    // MongoDB setup with SSL/TLS options for Atlas
+    mongoConnection = await mongoose.connect(databaseUrl, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      tls: true,
+      tlsAllowInvalidCertificates: false
+    });
     
     // Define schemas
     const recordSchema = new mongoose.Schema({
