@@ -49,7 +49,7 @@ npm run dev
 ### การใช้งานแบบ Production (Cloud)
 
 #### การ Deploy:
-- **Frontend**: Vercel (https://your-app.vercel.app)
+- **Frontend**: Vercel (https://apparel01.vercel.app)
 - **Backend**: Render (https://apparel-backend-6igk.onrender.com)
 - **Database**: MongoDB Atlas
 
@@ -57,7 +57,7 @@ npm run dev
 - `DATABASE_TYPE`: `mongodb`
 - `DATABASE_URL`: `mongodb+srv://chatsharev_db_user:JZvyskvJxRYNPHwD@cluster0.vwuvu4f.mongodb.net/?retryWrites=true&w=majority`
 - `NODE_ENV`: `production`
-- `FRONTEND_URL`: URL ของ Vercel frontend
+- `FRONTEND_URL`: `https://apparel01.vercel.app`
 
 ## 📱 วิธีการใช้งานตามอุปกรณ์
 
