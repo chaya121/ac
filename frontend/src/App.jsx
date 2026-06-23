@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import Header from './components/Header';
 import TabBar from './components/TabBar';
 import FormPage from './components/FormPage';
@@ -300,6 +301,7 @@ export default function App() {
 
   return (
     <div>
+      <Analytics />
       <Header />
       <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
 
