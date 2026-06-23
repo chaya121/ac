@@ -91,16 +91,14 @@ app.put('/api/master', async (req, res) => {
   }
 });
 
-if (isProd) {
-  const distPath = path.join(__dirname, '../frontend/dist');
-  app.use(express.static(distPath));
-  app.get(/^(?!\/api).*/, (_req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
-  });
-}
+// ลบ block นี้ออก — Vercel serve static ผ่าน outputDirectory แล้ว
+// if (isProd) { ... }
 
 await initDb();
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// ✅ เพิ่ม 2 บรรทัดนี้แทน app.listen เดิม
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+}
+
+export default app; // ← Vercel ต้องการ export นี้
