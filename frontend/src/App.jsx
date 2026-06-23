@@ -7,18 +7,7 @@ import StatsPage from './components/StatsPage';
 import MasterPage from './components/MasterPage';
 import PreviewModal from './components/PreviewModal';
 import { api, migrateFromLocalStorage } from './api/client';
-import { Analytics } from "@vercel/analytics/next"
-
-// Register PWA service worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').then(registration => {
-      console.log('SW registered: ', registration);
-    }).catch(registrationError => {
-      console.log('SW registration failed: ', registrationError);
-    });
-  });
-}
+import { Analytics } from '@vercel/analytics/react';
 
 const DEF_STEPS = [];
 
@@ -367,6 +356,8 @@ export default function App() {
           </div>
         ))}
       </div>
+
+      <Analytics />
     </div>
   );
 }

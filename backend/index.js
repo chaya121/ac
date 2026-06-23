@@ -16,6 +16,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3001;
 const isProd = process.env.NODE_ENV === 'production';
+const isVercel = process.env.VERCEL === '1';
 
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
@@ -91,14 +92,18 @@ app.put('/api/master', async (req, res) => {
   }
 });
 
-// ลบ block นี้ออก — Vercel serve static ผ่าน outputDirectory แล้ว
-// if (isProd) { ... }
+if (isProd && !isVercel) {
+  const distPath = path.join(__dirname, '../frontend/dist');
+  app.use(express.static(distPath));
+  app.get(/^(?!\/api).*/, (_req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
 await initDb();
 
-// ✅ เพิ่ม 2 บรรทัดนี้แทน app.listen เดิม
-if (process.env.NODE_ENV !== 'production') {
+if (!isVercel) {
   app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 }
 
-export default app; // ← Vercel ต้องการ export นี้
+export default app;

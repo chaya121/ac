@@ -1,6 +1,7 @@
-const API_BASE = process.env.NODE_ENV === 'production' 
-  ? 'https://apparel-backend-6igk.onrender.com/api'
-  : '/api';
+const API_BASE = import.meta.env.VITE_API_URL
+  || (import.meta.env.PROD
+    ? 'https://apparel-backend-6igk.onrender.com/api'
+    : '/api');
 
 async function request(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, {

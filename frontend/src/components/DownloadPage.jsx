@@ -118,7 +118,6 @@ export default function DownloadPage({ records, onDelete, onLoad, showToast }) {
         const data = new Uint8Array(event.target.result);
         const workbook = read(data, { type: 'array' });
         
-        // Read the first sheet
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = utils.sheet_to_json(worksheet);
@@ -128,11 +127,8 @@ export default function DownloadPage({ records, onDelete, onLoad, showToast }) {
           return;
         }
 
-        // Convert Excel data to record format
         const recordsToImport = jsonData.map((row, idx) => {
-          // Parse steps if they exist in the data
           const steps = [];
-          // You can add logic to parse steps from Excel if needed
           
           return {
             id: Date.now() + idx,
@@ -192,7 +188,6 @@ export default function DownloadPage({ records, onDelete, onLoad, showToast }) {
         await api.bulkImportRecords(recordsToImport);
         showToast(`นำเข้าข้อมูลสำเร็จ ${recordsToImport.length} รายการ`);
         
-        // Refresh the page to show new records
         window.location.reload();
       } catch (err) {
         console.error(err);
@@ -240,7 +235,7 @@ export default function DownloadPage({ records, onDelete, onLoad, showToast }) {
             }}
             onClick={handleExcelExport}
           >
-            � ส่งออก Excel
+            📊 ส่งออก Excel
           </button>
         </div>
       </div>
