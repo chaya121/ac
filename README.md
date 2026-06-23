@@ -59,103 +59,6 @@ npm run dev
 - `NODE_ENV`: `production`
 - `FRONTEND_URL`: URL ของ Vercel frontend
 
-## 📱 PWA (Progressive Web App)
-
-### การติดตั้ง PWA บน Mobile:
-1. เปิดเว็บบน mobile browser
-2. คลิก "Share" หรือ menu
-3. เลือก "Add to Home Screen"
-4. Icon จะปรากฏบนหน้าจอเหมือน native app
-
-### การสร้าง PWA Icons:
-สร้างไฟล์ใน `frontend/public/`:
-- `icon-192.png` (192x192 pixels)
-- `icon-512.png` (512x512 pixels)
-
-## 🗂️ โครงสร้าง Project
-
-```
-ac/
-├── backend/
-│   ├── index.js          # Express server
-│   └── db.js             # Database layer (SQLite + MongoDB)
-├── frontend/
-│   ├── src/
-│   │   ├── components/   # React components
-│   │   ├── api/          # API client
-│   │   └── App.jsx       # Main app component
-│   └── public/           # Static files + PWA icons
-├── database/             # SQLite database files
-├── vite.config.js        # Vite configuration + PWA
-├── package.json          # Dependencies
-└── .env.example          # Environment variables template
-```
-
-## 🔧 การตั้งค่า Environment Variables
-
-### Local Development:
-```env
-PORT=3001
-NODE_ENV=development
-DATABASE_TYPE=sqlite
-```
-
-### Production (MongoDB Atlas):
-```env
-PORT=3001
-NODE_ENV=production
-DATABASE_TYPE=mongodb
-DATABASE_URL=mongodb+srv://[USERNAME]:[PASSWORD]@cluster0.[CLUSTER-ID].mongodb.net/?retryWrites=true&w=majority
-```
-
-## 📦 Scripts ที่มีใช้
-
-```bash
-npm run dev          # เริ่ม development server (frontend + backend)
-npm run dev:client   # เริ่ม frontend เท่านั้น
-npm run dev:server  # เริ่ม backend เท่านั้น
-npm run build        # Build frontend สำหรับ production
-npm run start        # เริ่ม production server
-npm run preview      # Build และเริ่ม production server
-```
-
-## 🌐 Deployment
-
-### การ Deploy ไป Vercel (Frontend):
-1. เชื่อมต่อ GitHub repository กับ Vercel
-2. Vercel จะ auto-detect React/Vite project
-3. Deploy อัตโนมัติทุกครั้งที่ push ไป GitHub
-
-### การ Deploy ไป Render (Backend):
-1. เชื่อมต่อ GitHub repository กับ Render
-2. ตั้งค่า Build Command: `npm install`
-3. ตั้งค่า Start Command: `node backend/index.js`
-4. เพิ่ม environment variables ตามที่ระบุข้างบน
-
-## 🐛 การแก้ปัญหา
-
-### MongoDB SSL Error:
-หากเกิด error เรื่อง SSL connection กับ MongoDB Atlas:
-- ตรวจสอบว่า connection string มี `?retryWrites=true&w=majority` ต่อท้าย
-- ตรวจสอบ IP whitelist บน MongoDB Atlas
-
-### PWA ไม่ทำงาน:
-- ตรวจสอบว่า icons มีอยู่ใน `frontend/public/`
-- ตรวจสอบว่า service worker ลงทะเบียนแล้ว (ดูใน browser console)
-
-### Frontend ไม่เชื่อมต่อ Backend:
-- ตรวจสอบว่า API_BASE ใน `frontend/src/api/client.js` ถูกต้อง
-- ตรวจสอบ CORS configuration ใน `backend/index.js`
-- ตรวจสอบว่า FRONTEND_URL ตั้งค่าบน Render
-
-## 📝 ข้อมูลเพิ่มเติม
-
-- **Frontend Framework**: React 19 + Vite
-- **Backend Framework**: Express.js
-- **Database**: SQLite (local) / MongoDB Atlas (cloud)
-- **Deployment**: Vercel (frontend) + Render (backend)
-- **PWA**: vite-plugin-pwa
-  
 ## 📱 วิธีการใช้งานตามอุปกรณ์
 
 ### 📲 การใช้งานบนมือถือ (Mobile)
@@ -304,6 +207,104 @@ npm run preview      # Build และเริ่ม production server
 - ข้อมูลถูกบันทึกไปยัง MongoDB Atlas อัตโนมัติ
 - สามารถใช้งานได้ทุกที่ทุกเวลาที่มี internet
 - PWA ทำงานได้แม้ไม่มี internet (บางส่วน)
+
+## 📱 PWA (Progressive Web App)
+
+### การติดตั้ง PWA บน Mobile:
+1. เปิดเว็บบน mobile browser
+2. คลิก "Share" หรือ menu
+3. เลือก "Add to Home Screen"
+4. Icon จะปรากฏบนหน้าจอเหมือน native app
+
+### การสร้าง PWA Icons:
+สร้างไฟล์ใน `frontend/public/`:
+- `icon-192.png` (192x192 pixels)
+- `icon-512.png` (512x512 pixels)
+
+## 🗂️ โครงสร้าง Project
+
+```
+ac/
+├── backend/
+│   ├── index.js          # Express server
+│   └── db.js             # Database layer (SQLite + MongoDB)
+├── frontend/
+│   ├── src/
+│   │   ├── components/   # React components
+│   │   ├── api/          # API client
+│   │   └── App.jsx       # Main app component
+│   └── public/           # Static files + PWA icons
+├── database/             # SQLite database files
+├── vite.config.js        # Vite configuration + PWA
+├── package.json          # Dependencies
+└── .env.example          # Environment variables template
+```
+
+## 🔧 การตั้งค่า Environment Variables
+
+### Local Development:
+```env
+PORT=3001
+NODE_ENV=development
+DATABASE_TYPE=sqlite
+```
+
+### Production (MongoDB Atlas):
+```env
+PORT=3001
+NODE_ENV=production
+DATABASE_TYPE=mongodb
+DATABASE_URL=mongodb+srv://[USERNAME]:[PASSWORD]@cluster0.[CLUSTER-ID].mongodb.net/?retryWrites=true&w=majority
+```
+
+## 📦 Scripts ที่มีใช้
+
+```bash
+npm run dev          # เริ่ม development server (frontend + backend)
+npm run dev:client   # เริ่ม frontend เท่านั้น
+npm run dev:server  # เริ่ม backend เท่านั้น
+npm run build        # Build frontend สำหรับ production
+npm run start        # เริ่ม production server
+npm run preview      # Build และเริ่ม production server
+```
+
+## 🌐 Deployment
+
+### การ Deploy ไป Vercel (Frontend):
+1. เชื่อมต่อ GitHub repository กับ Vercel
+2. Vercel จะ auto-detect React/Vite project
+3. Deploy อัตโนมัติทุกครั้งที่ push ไป GitHub
+
+### การ Deploy ไป Render (Backend):
+1. เชื่อมต่อ GitHub repository กับ Render
+2. ตั้งค่า Build Command: `npm install`
+3. ตั้งค่า Start Command: `node backend/index.js`
+4. เพิ่ม environment variables ตามที่ระบุข้างบน
+
+## 🐛 การแก้ปัญหา
+
+### MongoDB SSL Error:
+หากเกิด error เรื่อง SSL connection กับ MongoDB Atlas:
+- ตรวจสอบว่า connection string มี `?retryWrites=true&w=majority` ต่อท้าย
+- ตรวจสอบ IP whitelist บน MongoDB Atlas
+
+### PWA ไม่ทำงาน:
+- ตรวจสอบว่า icons มีอยู่ใน `frontend/public/`
+- ตรวจสอบว่า service worker ลงทะเบียนแล้ว (ดูใน browser console)
+
+### Frontend ไม่เชื่อมต่อ Backend:
+- ตรวจสอบว่า API_BASE ใน `frontend/src/api/client.js` ถูกต้อง
+- ตรวจสอบ CORS configuration ใน `backend/index.js`
+- ตรวจสอบว่า FRONTEND_URL ตั้งค่าบน Render
+
+## 📝 ข้อมูลเพิ่มเติม
+
+- **Frontend Framework**: React 19 + Vite
+- **Backend Framework**: Express.js
+- **Database**: SQLite (local) / MongoDB Atlas (cloud)
+- **Deployment**: Vercel (frontend) + Render (backend)
+- **PWA**: vite-plugin-pwa
+
 ## 📧 ติดต่อ
 
 GitHub Repository: https://github.com/chaya121/ac

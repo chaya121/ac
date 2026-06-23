@@ -235,6 +235,25 @@ export default function FormPage({
             />
           </div>
           <div className="frow">
+            <span className="flabel" style={{ minWidth: '130px' }}>ประเภทเสื้อผ้า :</span>
+            <select 
+              className="finput"
+              value={formState.clothingType || ''}
+              onChange={(e) => handleFieldChange('clothingType', e.target.value)}
+            >
+              <option value="">-- เลือกประเภท --</option>
+              <option value="เสื้อยืด">เสื้อยืด (T-Shirt)</option>
+              <option value="เสื้อเชิ้ต">เสื้อเชิ้ต (Shirt)</option>
+              <option value="เสื้อโปโล">เสื้อโปโล (Polo)</option>
+              <option value="เสื้อฮู้ด">เสื้อฮู้ด (Hoodie)</option>
+              <option value="เสื้อแจ็กเก็ต">เสื้อแจ็กเก็ต (Jacket)</option>
+              <option value="กางเกง">กางเกง (Pants)</option>
+              <option value="กระโปรง">กระโปรง (Skirt)</option>
+              <option value="กางเกงขาสั้น">กางเกงขาสั้น (Shorts)</option>
+              <option value="อื่นๆ">อื่นๆ (Other)</option>
+            </select>
+          </div>
+          <div className="frow">
             <span className="flabel" style={{ minWidth: '130px' }}>จำนวนผลิต :</span>
             <input 
               type="number" 

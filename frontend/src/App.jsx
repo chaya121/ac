@@ -64,6 +64,7 @@ const createEmptyFormState = () => ({
   brand: '',
   customer: '',
   model: '',
+  clothingType: '',
   qty: '',
   size: '',
   colors: '',

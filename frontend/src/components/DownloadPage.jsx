@@ -1,6 +1,7 @@
 import React from 'react';
 import { generatePDF } from '../utils/pdfGenerator';
-import { utils, writeFile } from 'xlsx';
+import { utils, writeFile, read } from 'xlsx';
+import { api } from '../api/client';
 
 export default function DownloadPage({ records, onDelete, onLoad, showToast }) {
   const handlePdfDownload = (record) => {
@@ -37,6 +38,7 @@ export default function DownloadPage({ records, onDelete, onLoad, showToast }) {
           'แบรนด์': r.brand || '-',
           'ลูกค้า': r.customer || '-',
           'ชื่อรุ่น': r.model || '-',
+          'ประเภทเสื้อผ้า': r.clothingType || '-',
           'จำนวนผลิต (ตัว)': r.qty || 0,
           'ไซส์': r.size || '-',
           'จำนวนสี': r.colors || 0,
@@ -106,6 +108,101 @@ export default function DownloadPage({ records, onDelete, onLoad, showToast }) {
     }
   };
 
+  const handleExcelImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const data = new Uint8Array(event.target.result);
+        const workbook = read(data, { type: 'array' });
+        
+        // Read the first sheet
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = utils.sheet_to_json(worksheet);
+
+        if (jsonData.length === 0) {
+          showToast('ไฟล์ Excel ไม่มีข้อมูล', 'err');
+          return;
+        }
+
+        // Convert Excel data to record format
+        const recordsToImport = jsonData.map((row, idx) => {
+          // Parse steps if they exist in the data
+          const steps = [];
+          // You can add logic to parse steps from Excel if needed
+          
+          return {
+            id: Date.now() + idx,
+            date: row['วันที่'] || '',
+            merText: row['ผู้ประสานงาน (Mer)'] || '',
+            brand: row['แบรนด์'] || '',
+            customer: row['ลูกค้า'] || '',
+            model: row['ชื่อรุ่น'] || '',
+            clothingType: row['ประเภทเสื้อผ้า'] || '',
+            qty: parseInt(row['จำนวนผลิต (ตัว)']) || 0,
+            size: row['ไซส์'] || '',
+            colors: parseInt(row['จำนวนสี']) || 0,
+            sampleReal: row['มีตัวอย่างจริง'] === 'ใช่',
+            samplePic: row['ตีราคาจากรูป'] === 'ใช่',
+            detail: row['รายละเอียดงาน'] || '',
+            chk: {
+              pak: row['ปัก']?.includes('ปัก') || false,
+              pak_n: row['ปัก']?.match(/\(([^)]+)\)/)?.[1] || '',
+              print: row['พิมพ์']?.includes('พิมพ์') || false,
+              print_n: row['พิมพ์']?.match(/\(([^)]+)\)/)?.[1] || '',
+              tag: row['ตัวรีดป้ายไซส์'] === 'มี',
+              big: row['ตัวรีดใหญ่']?.includes('มี') || false,
+              big_n: row['ตัวรีดใหญ่']?.match(/\(([^)]+)\)/)?.[1] || '',
+              rib: row['รีดวีราเน่รองปัก'] === 'มี',
+              send: row['ส่งซัก']?.includes('มี') || false,
+              send_n: row['ส่งซัก']?.match(/\(([^)]+)\)/)?.[1] || '',
+              small: row['ตัวรีดเล็ก']?.includes('มี') || false,
+              small_n: row['ตัวรีดเล็ก']?.match(/\(([^)]+)\)/)?.[1] || ''
+            },
+            noteProd: row['Note ฝ่ายผลิต'] || '',
+            noteSales: row['Note ฝ่ายขาย'] || '',
+            supervisor: row['ผู้ดูแล (เมอร์)'] || '',
+            sewers: parseInt(row['จำนวนคนเย็บ (ประเมิน)']) || 0,
+            rate: parseFloat(row['ตัว/ชม (ประเมิน)']) || 0,
+            estWage: parseFloat(row['ประเมินค่าแรง (บาท)']) || 0,
+            confirmed: row['ราคา Confirmed'] || '',
+            warning: row['ข้อควรระวัง'] || '',
+            solution: row['วิธีแก้ไข'] || '',
+            actual: {
+              start: row['เริ่มเย็บจริง'] || '',
+              end: row['จบเย็บจริง'] || '',
+              sewers: parseInt(row['คนเย็บจริง']) || 0,
+              days: parseInt(row['วันเย็บจริง']) || 0,
+              rate: parseFloat(row['ตัว/ชม (จริง)']) || 0,
+              wage: parseFloat(row['ค่าแรงจริง']) || 0,
+              total: parseFloat(row['ทุนรวมจริง']) || 0,
+              remark: row['หมายเหตุจริง'] || ''
+            },
+            steps: steps,
+            imgs: [],
+            perColor: ''
+          };
+        });
+
+        showToast(`กำลังนำเข้า ${recordsToImport.length} รายการ...`);
+        
+        await api.bulkImportRecords(recordsToImport);
+        showToast(`นำเข้าข้อมูลสำเร็จ ${recordsToImport.length} รายการ`);
+        
+        // Refresh the page to show new records
+        window.location.reload();
+      } catch (err) {
+        console.error(err);
+        showToast('เกิดข้อผิดพลาดในการนำเข้า Excel', 'err');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    e.target.value = '';
+  };
+
   return (
     <div className="page active">
       <div className="form-card" style={{ padding: '22px', textAlign: 'center' }}>
@@ -116,18 +213,36 @@ export default function DownloadPage({ records, onDelete, onLoad, showToast }) {
         <div style={{ fontSize: '14px', color: 'var(--muted)', marginTop: '4px' }}>
           จัดการข้อมูลใบดีทั้งหมด ดาวน์โหลด PDF หรือส่งออก Excel
         </div>
-        <button
-          className="btn-save"
-          style={{
-            background: records.length > 0 ? '#27ae60' : '#95a5a6',
-            marginTop: '14px',
-            width: '100%',
-            cursor: records.length > 0 ? 'pointer' : 'not-allowed',
-          }}
-          onClick={handleExcelExport}
-        >
-          🟢 ส่งออกประวัติเป็น Excel (.xlsx)
-        </button>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
+          <button
+            className="btn-save"
+            style={{
+              background: '#3498db',
+              flex: 1,
+            }}
+            onClick={() => document.getElementById('excelImport').click()}
+          >
+            📥 นำเข้า Excel
+          </button>
+          <input
+            id="excelImport"
+            type="file"
+            accept=".xlsx,.xls"
+            style={{ display: 'none' }}
+            onChange={handleExcelImport}
+          />
+          <button
+            className="btn-save"
+            style={{
+              background: records.length > 0 ? '#27ae60' : '#95a5a6',
+              flex: 1,
+              cursor: records.length > 0 ? 'pointer' : 'not-allowed',
+            }}
+            onClick={handleExcelExport}
+          >
+            � ส่งออก Excel
+          </button>
+        </div>
       </div>
 
       {records.length > 0 ? (
