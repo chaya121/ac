@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ใบดีขั้นตอนผลิต – Apparel Creations</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght=400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --brand:#c8392b;--primary:#1a5276;--pri-dk:#154360;--pri-lt:#eaf2f8;
+  --tan:#d9c9b0;--tan-lt:#f7f0e6;--pink:#f5d5d5;--green-lt:#c8ddc8;
+  --gray:#f0f2f5;--border:#c8c8c8;--text:#1a1a1a;--muted:#777;
+  --shadow:0 2px 14px rgba(0,0,0,.10);--r:10px;--r-sm:7px;--pad:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Sarabun',sans-serif;background:var(--gray);color:var(--text);font-size:19px;min-height:100vh}
+
+/* ── Header ── */
+.app-header{background:#1c2833;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:300;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.logo-box{background:var(--brand);color:#fff;font-size:11px;font-weight:800;line-height:1.25;padding:5px 8px;border-radius:4px;text-align:center;flex-shrink:0}
+.hdr-text h1{font-size:clamp(16px,4.5vw,21px);font-weight:700;line-height:1.2}
+.hdr-text p{font-size:clamp(12px,3vw,15px);opacity:.7;margin-top:1px}
+
+/* ── Tabs ── */
+.tab-bar{display:flex;background:#fff;border-bottom:2px solid var(--border);overflow-x:auto;scrollbar-width:none;position:sticky;top:54px;z-index:200}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-btn{flex:1;min-width:90px;padding:14px 6px;border:none;background:none;font-family:'Sarabun',sans-serif;font-size:clamp(15px,3.5vw,17px);font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:.2s;-webkit-tap-highlight-color:transparent}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab-btn:hover:not(.active){background:var(--pri-lt)}
+
+/* ── Layout ── */
+.wrap{max-width:860px;margin:0 auto;padding:16px 14px 90px}
+.page{display:none}.page.active{display:block}
+
+/* ── Form Card ── */
+.form-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.form-titlebar{background:var(--tan-lt);border-bottom:2px solid var(--tan);padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.form-titlebar .logo{background:var(--brand);color:#fff;font-size:11px;font-weight:800;line-height:1.2;padding:5px 7px;border-radius:3px;text-align:center;white-space:nowrap;flex-shrink:0}
+.form-main-title{flex:1;text-align:center;font-size:clamp(17px,5vw,23px);font-weight:800;color:#1a1a1a;min-width:0}
+.page-num{font-size:22px;color:var(--muted);font-weight:600;white-space:nowrap}
+.form-body{padding:var(--pad)}
+
+/* ── Section ── */
+.sec-hdr{background:var(--tan);text-align:center;font-size:22px;font-weight:700;padding:8px 14px;margin:14px calc(-1*var(--pad)) 12px;color:#3a2800}
+.sec-label{font-size:22px;font-weight:700;color:var(--primary);margin:14px 0 8px;display:flex;align-items:center;gap:7px}
+.sec-label::after{content:'';flex:1;height:1.5px;background:#e0e0e0}
+
+/* ── Fields ── */
+.frow{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.flabel{font-size:19px;font-weight:600;white-space:nowrap;min-width:90px;flex-shrink:0}
+.finput{border:none;border-bottom:1.5px solid #aaa;background:transparent;font-family:'Sarabun',sans-serif;font-size:19px;color:var(--text);padding:6px 4px;outline:none;flex:1;min-width:80px}
+.finput:focus{border-bottom-color:var(--primary)}
+.unit{font-size:22px;color:var(--text);white-space:nowrap;flex-shrink:0}
+
+/* ── Mer chips ── */
+.mer-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.chip{width:28px;height:20px;border:1.5px solid #999;border-radius:3px;cursor:pointer;position:relative;transition:.15s;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+.chip:hover{transform:scale(1.15)}
+.chip.on::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+
+/* ── Checkboxes ── */
+.check-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.ck{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:19px;min-height:38px;flex-shrink:0}
+.ck input[type=checkbox]{width:22px;height:22px;cursor:pointer;accent-color:var(--primary);flex-shrink:0}
+.ck-note{border:none;border-bottom:1.5px solid #aaa;background:transparent;font-family:'Sarabun',sans-serif;font-size:22px;width:60px;padding:2px 4px;outline:none}
+
+/* ── Upload ── */
+.upload-zone{border:2.5px dashed #bbb;border-radius:var(--r);padding:22px 12px;text-align:center;cursor:pointer;background:#fafafa;position:relative;transition:.2s;min-height:110px}
+.upload-zone:hover{background:var(--pri-lt);border-color:var(--primary)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:34px;margin-bottom:5px}
+.upload-txt{font-size:22px;font-weight:600;color:#555}
+.upload-hint{font-size:22px;color:#999;margin-top:3px}
+.img-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.img-thumb{position:relative;border-radius:6px;overflow:hidden;border:1.5px solid #ddd;width:clamp(70px,22vw,90px);height:clamp(70px,22vw,90px)}
+.img-thumb img{width:100%;height:100%;object-fit:cover}
+.img-thumb .del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* ── Textarea ── */
+.ta{width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 10px;font-family:'Sarabun',sans-serif;font-size:19px;resize:vertical;min-height:64px;outline:none}
+.ta:focus{border-color:var(--primary)}
+
+/* ── Two-col ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.note-label{font-size:19px;font-weight:700;color:var(--muted);margin-bottom:5px}
+
+/* ── Actual Section ── */
+.actual-wrap{background:var(--tan-lt);border-top:2px solid var(--tan);padding:14px 16px;margin:18px calc(-1*var(--pad)) calc(-1*var(--pad))}
+.actual-hdr{background:var(--tan);text-align:center;font-weight:700;font-size:22px;padding:7px;margin:0 -16px 12px;color:#3a2800;border-bottom:1px solid var(--tan)}
+.actual-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.af{display:flex;flex-direction:column;gap:4px}
+.af label{font-size:19px;font-weight:600;color:var(--text)}
+.ainput{background:#d5eaf5;border:1px solid #a0bcd0;border-radius:5px;padding:8px 9px;font-family:'Sarabun',sans-serif;font-size:22px;outline:none;width:100%}
+.anote{font-size:11px;color:#c0392b;font-weight:600}
+
+/* ── Step Table ── */
+.step-delete{background:#fdecea;color:var(--brand);border:1.5px solid #e08080;border-radius:var(--r-sm);padding:6px 12px;font-size:19px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;white-space:nowrap}
+.step-delete:hover{background:#fcc}
+.step-tbl-wrap{overflow-x:auto;border:1.5px solid var(--border);border-radius:var(--r);margin-bottom:14px;background:#fff}
+.step-tbl{width:100%;border-collapse:collapse;min-width:560px}
+.step-tbl th{background:var(--primary);color:#fff;font-size:19px;font-weight:700;padding:9px 8px;text-align:center;white-space:nowrap}
+.step-tbl td{border-bottom:1px solid #e8e8e8;padding:5px 5px;vertical-align:middle;font-size:22px}
+.step-tbl tr:last-child td{border-bottom:none}
+.step-tbl tr:nth-child(even) td{background:#f9fbff}
+.step-tbl tr:hover td{background:var(--pri-lt)}
+.step-tbl .td-num{text-align:center;font-weight:700;color:var(--primary);width:36px}
+.step-tbl .td-part{min-width:100px}
+.step-tbl .td-act{min-width:120px}
+.step-tbl .td-mac{min-width:110px}
+.step-tbl .td-time{width:70px;text-align:center}
+.step-tbl .td-wrk{width:56px;text-align:center}
+.step-tbl .td-note{min-width:90px}
+.step-tbl .td-del{width:40px;text-align:center}
+.step-tbl-input{border:none;background:transparent;font-family:'Sarabun',sans-serif;font-size:22px;width:100%;padding:5px 4px;outline:none;color:var(--text)}
+.step-tbl-input:focus{background:#fff;border-radius:4px;box-shadow:0 0 0 2px #a0c4e4}
+.step-tbl-input[type=number]{text-align:center}
+.step-tbl-select{border:none;background:transparent;font-family:'Sarabun',sans-serif;font-size:22px;width:100%;padding:5px 2px;outline:none;color:var(--text);cursor:pointer;-webkit-appearance:auto;appearance:auto}
+.step-tbl-select:focus{background:#fff;border-radius:4px;box-shadow:0 0 0 2px #a0c4e4}
+.step-tbl-total{background:var(--tan-lt);border-top:2px solid var(--tan)!important}
+.step-tbl-total td{font-weight:700;color:#3a2800;font-size:22px;padding:9px 8px}
+.add-step-btn{width:100%;padding:14px;border:2.5px dashed #a0bcd0;border-radius:var(--r);background:var(--pri-lt);color:var(--primary);font-family:'Sarabun',sans-serif;font-size:19px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;transition:.2s;min-height:48px}
+.add-step-btn:hover{background:#d0e8f5;border-color:var(--primary)}
+/* ── Master Data Page ── */
+.master-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;max-height:320px;overflow-y:auto}
+.master-item{display:flex;align-items:center;gap:8px;background:#f5f9ff;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;transition:.15s}
+.master-item:hover{border-color:#a0bcd0;background:var(--pri-lt)}
+.master-item-icon{font-size:22px;flex-shrink:0}
+.master-item-name{flex:1;font-size:19px;font-weight:500;color:var(--text);min-width:0}
+.master-item-name-edit{flex:1;border:none;background:#fff;border-radius:6px;padding:5px 8px;font-family:'Sarabun',sans-serif;font-size:19px;font-weight:500;color:var(--text);outline:2px solid var(--primary);min-width:0}
+.master-item-btns{display:flex;gap:6px;flex-shrink:0}
+.master-edit-btn{background:#eaf2fc;color:#1a5c8a;border:1.5px solid #b0cce0;border-radius:6px;padding:5px 10px;font-size:22px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif}
+.master-edit-btn:hover{background:#c8e0f5}
+.master-del-btn{background:#fdecea;color:var(--brand);border:1.5px solid #e08080;border-radius:6px;padding:5px 10px;font-size:22px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif}
+.master-del-btn:hover{background:#fcc}
+.master-save-btn{background:var(--primary);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:22px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif}
+.master-save-btn:hover{background:var(--pri-dk)}
+.master-add-row{display:flex;gap:8px;margin-top:4px}
+.master-inp{flex:1;padding:10px 14px;border:2px dashed #a0bcd0;border-radius:8px;font-family:'Sarabun',sans-serif;font-size:19px;background:var(--pri-lt);outline:none;min-width:0}
+.master-inp:focus{border-color:var(--primary);background:#fff;border-style:solid}
+.master-add-btn{padding:10px 18px;border:none;border-radius:8px;background:var(--primary);color:#fff;font-family:'Sarabun',sans-serif;font-size:19px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.master-add-btn:hover{background:var(--pri-dk)}
+.master-empty{text-align:center;color:var(--muted);font-size:22px;padding:20px;border:2px dashed #ddd;border-radius:8px}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}
+.tag{padding:8px 14px;border:2px solid var(--border);border-radius:50px;background:#fff;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:22px;font-weight:500;color:var(--text);transition:.15s;display:inline-flex;align-items:center;gap:5px;min-height:38px;-webkit-tap-highlight-color:transparent}
+.tag.on{border-color:var(--primary);background:var(--primary);color:#fff;font-weight:700}
+
+/* ── Warn/Fix ── */
+.wf-wrap{display:grid;grid-template-columns:1fr 1fr;border-radius:var(--r-sm);overflow:hidden;border:1px solid #ccc;margin-bottom:0}
+.wf-box+.wf-box{border-left:1px solid #ccc}
+.wf-hdr{text-align:center;font-weight:700;font-size:22px;padding:8px;border-bottom:1px solid #ccc}
+.wf-hdr.warn{background:var(--pink);color:#7a1a1a;border-color:#e0b0b0}
+.wf-hdr.fix{background:var(--green-lt);color:#1a4a1a;border-color:#a0c0a0}
+.wfta{width:100%;border:none;padding:10px;font-family:'Sarabun',sans-serif;font-size:19px;resize:vertical;min-height:90px;background:transparent;outline:none}
+
+/* ── Bottom Buttons ── */
+.btns{display:flex;gap:10px;margin-top:18px}
+.btn-save{flex:2;min-width:140px;padding:18px;border:none;border-radius:var(--r);background:#27ae60;color:#fff;font-family:'Sarabun',sans-serif;font-size:22px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:.2s;min-height:58px;-webkit-tap-highlight-color:transparent;box-shadow:0 3px 12px rgba(39,174,96,.25)}
+.btn-save:hover{background:#1e8449}
+.btn-clear{flex:1;min-width:90px;padding:18px;border:2px solid var(--border);border-radius:var(--r);background:#fff;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:19px;font-weight:600;cursor:pointer;transition:.2s;min-height:58px}
+.btn-clear:hover{background:var(--gray)}
+
+/* ── Download/Records ── */
+.rec-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow)}
+.rec-hdr{background:var(--tan-lt);border-bottom:1.5px solid var(--tan);padding:12px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.rec-title{font-size:clamp(16px,4vw,19px);font-weight:700;line-height:1.3}
+.rec-sub{font-size:clamp(13px,3vw,15px);color:var(--muted);margin-top:3px;line-height:1.5}
+.rec-badge{background:var(--primary);color:#fff;border-radius:6px;padding:7px 12px;text-align:center;font-weight:700;min-width:54px;flex-shrink:0}
+.rec-badge .bn{font-size:22px;line-height:1;display:block}
+.rec-badge .bl{font-size:11px;margin-top:2px;display:block}
+.rec-body{padding:12px 14px}
+.btn-pdf{width:100%;padding:14px;border:none;border-radius:var(--r);background:#d4a843;color:#fff;font-family:'Sarabun',sans-serif;font-size:19px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:10px;transition:.2s}
+.btn-pdf:hover{background:#b8902e}
+.btn-del{width:100%;padding:12px;border:1.5px solid #e08080;border-radius:6px;background:#fff;color:var(--brand);font-family:'Sarabun',sans-serif;font-size:19px;font-weight:600;cursor:pointer;margin-top:8px;min-height:46px}
+.btn-del:hover{background:#fde}
+
+/* ── Stats ── */
+.stat-hdr{background:var(--primary);color:#fff;border-radius:var(--r);padding:18px;margin-bottom:16px;text-align:center}
+.stat-hdr h2{font-size:clamp(16px,5vw,20px);font-weight:700}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}
+.stat-box{background:#fff;border:1.5px solid #ddd;border-radius:var(--r);padding:16px 10px;text-align:center;box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.stat-box .sn{font-size:clamp(26px,7vw,34px);font-weight:800;color:var(--primary);line-height:1}
+.stat-box .sl{font-size:19px;color:var(--muted);margin-top:4px}
+.type-row{background:#fff;border:1.5px solid #ddd;border-radius:8px;padding:12px 14px;margin-bottom:9px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 5px rgba(0,0,0,.06)}
+.type-row .ic{font-size:26px;flex-shrink:0}
+.type-row .inf{flex:1;min-width:0}
+.type-row .inf .nm{font-size:clamp(13px,4vw,16px);font-weight:700}
+.type-row .inf .dt{font-size:22px;color:var(--muted);margin-top:2px;line-height:1.4}
+.type-badge{background:var(--pri-lt);color:var(--primary);border-radius:7px;padding:6px 12px;text-align:center;font-weight:700;min-width:52px;flex-shrink:0}
+.type-badge .tn{font-size:22px;display:block;line-height:1}
+.type-badge .tl{font-size:11px;display:block;margin-top:2px}
+
+/* ── Empty / Toast ── */
+.empty{text-align:center;padding:44px 18px;color:var(--muted)}
+.empty .ei{font-size:54px;margin-bottom:10px}
+.empty p{font-size:22px;line-height:1.6}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a3a5c;color:#fff;padding:13px 24px;border-radius:50px;font-size:19px;font-weight:600;box-shadow:0 4px 18px rgba(0,0,0,.25);z-index:9999;transition:opacity .3s;white-space:nowrap;pointer-events:none;max-width:90vw;text-align:center}
+.toast.err{background:var(--brand)}
+.toast.hidden{opacity:0}
+
+/* ── Preview Modal ── */
+.pv-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.pv-sheet{width:100%;max-width:820px;min-height:100dvh;background:var(--gray);display:flex;flex-direction:column}
+.pv-topbar{position:sticky;top:0;z-index:100;background:#1c2833;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;box-shadow:0 2px 8px rgba(0,0,0,.4);flex-shrink:0}
+.pv-topbar-title{font-size:clamp(16px,4vw,19px);font-weight:700;flex:1;text-align:center}
+.pv-btn-back{background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:8px;padding:8px 14px;font-family:'Sarabun',sans-serif;font-size:22px;font-weight:600;cursor:pointer;white-space:nowrap}
+.pv-btn-back:hover{background:rgba(255,255,255,.28)}
+.pv-btn-save{background:#27ae60;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-family:'Sarabun',sans-serif;font-size:22px;font-weight:700;cursor:pointer;white-space:nowrap}
+.pv-btn-save:hover{background:#1e8449}
+.pv-body{flex:1;padding:16px 14px 100px}
+.pv-page{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.pv-page-hdr{background:var(--tan-lt);border-bottom:2px solid var(--tan);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pv-logo{background:var(--brand);color:#fff;font-size:11px;font-weight:800;line-height:1.25;padding:5px 8px;border-radius:3px;text-align:center;flex-shrink:0}
+.pv-page-title{flex:1;text-align:center;font-size:clamp(17px,5vw,22px);font-weight:800;color:#1a1a1a}
+.pv-page-num{font-size:22px;color:var(--muted);font-weight:600;white-space:nowrap}
+.pv-page-body{padding:16px}
+.pv-row2{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:8px}
+.pv-row4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px 10px;margin-bottom:8px}
+.pv-field{display:flex;align-items:baseline;gap:6px;padding:5px 0;border-bottom:1px solid #e8e8e8;flex-wrap:wrap;min-height:30px}
+.pv-field.wide{grid-column:1/-1}
+.pv-flabel{font-size:19px;font-weight:700;color:var(--muted);white-space:nowrap;flex-shrink:0}
+.pv-fval{font-size:19px;font-weight:500;color:var(--text);flex:1;min-width:0;word-break:break-word}
+.pv-fval.empty{color:#ccc}
+.pv-blank{color:#d0d0d0;letter-spacing:2px;font-size:22px}
+.pv-unit{font-size:19px;color:var(--muted)}
+.pv-fnote{font-size:11px;color:#c0392b;font-weight:600;width:100%}
+.pv-checks{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:10px}
+.pv-extras{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px 14px;margin-bottom:10px}
+.pv-ck{display:flex;align-items:center;gap:6px;font-size:22px;padding:4px 0;color:var(--muted)}
+.pv-ck.on{color:var(--text);font-weight:600}
+.pv-ck-icon{font-size:19px;line-height:1;flex-shrink:0}
+.pv-ck-note{font-size:22px;color:var(--primary)}
+.pv-sec{font-size:19px;font-weight:700;color:var(--primary);margin:14px 0 8px;display:flex;align-items:center;gap:7px}
+.pv-sec::after{content:'';flex:1;height:1.5px;background:#e0e0e0}
+.pv-sec.tan{background:var(--tan);color:#3a2800;padding:7px 12px;margin:14px -16px 10px;font-size:22px;border-top:1px solid var(--tan);border-bottom:1px solid var(--tan)}
+.pv-sec.tan::after{display:none}
+.pv-imgs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.pv-img{width:clamp(80px,22vw,110px);height:clamp(80px,22vw,110px);object-fit:cover;border-radius:6px;border:1.5px solid #ddd}
+.pv-nlabel{font-size:22px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.pv-tb{border:1.5px solid #e8e8e8;border-radius:6px;padding:8px 10px;font-size:19px;background:#fafafa;min-height:44px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.pv-tb.nb{border:none;background:transparent;padding:8px 10px}
+.pv-tb-val{color:var(--text)}
+.pv-tb-empty{color:#e0e0e0}
+.pv-empty{text-align:center;padding:16px;color:#ccc;font-size:22px;border:1.5px dashed #ddd;border-radius:8px;margin-bottom:10px}
+.pv-steps{border:1.5px solid #e0e0e0;border-radius:var(--r);overflow:hidden;margin-bottom:14px}
+.pv-step-row{display:flex;align-items:flex-start;border-bottom:1px solid #eee}
+.pv-step-row:last-child{border-bottom:none}
+.pv-snum{background:#f5f5f5;color:var(--muted);font-size:22px;font-weight:800;width:36px;flex-shrink:0;text-align:center;padding:10px 4px;border-right:1px solid #eee;align-self:stretch;display:flex;align-items:center;justify-content:center}
+.pv-scontent{flex:1;padding:9px 12px;min-width:0}
+.pv-slabel{font-size:19px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:5px}
+.pv-stags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px}
+.pv-stag{font-size:22px;padding:2px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+.pv-stag.p{background:#eaf2f8;color:#1a5276}
+.pv-stag.a{background:#f0f9f0;color:#1a5c1a}
+.pv-stag.m{background:#fdf2f8;color:#7b241c}
+.pv-sdetail{font-size:19px;color:var(--muted);margin-top:3px;font-style:italic;line-height:1.5}
+.pv-wf{display:grid;grid-template-columns:1fr 1fr;border:1px solid #ccc;border-radius:var(--r-sm);overflow:hidden;margin-bottom:14px}
+.pv-wf-box+.pv-wf-box{border-left:1px solid #ccc}
+.pv-wf-hdr{text-align:center;font-weight:700;font-size:19px;padding:7px;border-bottom:1px solid #ccc}
+.pv-wf-hdr.warn{background:#f5d5d5;color:#7a1a1a;border-color:#e0b0b0}
+.pv-wf-hdr.fix{background:#c8ddc8;color:#1a4a1a;border-color:#a0c0a0}
+.pv-actual{background:var(--tan-lt);border-top:2px solid var(--tan);padding:14px 16px;margin:0 -16px -16px;border-radius:0 0 var(--r) var(--r)}
+.pv-actual-hdr{background:var(--tan);text-align:center;font-weight:700;font-size:22px;padding:7px;margin:0 -16px 12px;color:#3a2800;border-bottom:1px solid var(--tan)}
+.pv-bottom{display:flex;gap:10px;padding:16px 14px;background:#fff;border-top:1.5px solid var(--border);position:sticky;bottom:0;z-index:100;box-shadow:0 -3px 12px rgba(0,0,0,.10);flex-shrink:0}
+.pv-bottom-back{flex:1;padding:16px;border:2px solid var(--border);border-radius:var(--r);background:#fff;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:22px;font-weight:600;cursor:pointer;transition:.2s;min-height:54px}
+.pv-bottom-back:hover{background:var(--gray)}
+.pv-bottom-save{flex:2;padding:16px;border:none;border-radius:var(--r);background:#27ae60;color:#fff;font-family:'Sarabun',sans-serif;font-size:22px;font-weight:700;cursor:pointer;transition:.2s;min-height:54px;box-shadow:0 3px 12px rgba(39,174,96,.3)}
+.pv-bottom-save:hover{background:#1e8449}
+
+/* ── Responsive ── */
+@media(max-width:768px){:root{--pad:16px}}
+@media(max-width:560px){
+  :root{--pad:13px}
+  body{font-size:18px}
+  .wrap{padding:12px 10px 90px}
+  .frow{flex-direction:column;align-items:stretch;gap:4px}
+  .flabel{min-width:unset;font-size:22px}
+  .finput{width:100%}
+  .two-col,.actual-grid,.pv-row2,.pv-row4{grid-template-columns:1fr}
+  .pv-row4{grid-template-columns:1fr 1fr}
+  .check-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .wf-wrap,.pv-wf{grid-template-columns:1fr}
+  .wf-box+.wf-box,.pv-wf-box+.pv-wf-box{border-left:none;border-top:1px solid #ccc}
+  .btns{flex-direction:column}
+  .btn-save,.btn-clear{width:100%;min-height:54px}
+  .pv-sec.tan{margin:14px -13px 10px}
+  .pv-actual{margin:0 -13px -13px}
+  .tag{font-size:19px;padding:8px 11px}
+  .add-tag-input{font-size:19px;padding:7px 11px}
+  .add-tag-btn{font-size:19px;padding:7px 12px;min-height:36px}
+  .pv-bottom-back{font-size:19px;padding:14px}
+  .pv-bottom-save{font-size:22px;padding:14px}
+}
+@media(max-width:380px){
+  .form-titlebar .logo{display:none}
+  .check-row{grid-template-columns:1fr}
+  .tab-btn{font-size:11px;min-width:70px}
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="logo-box">Apparel<br>Creations</div>
+  <div class="hdr-text">
+    <h1>ใบดีขั้นตอนผลิต</h1>
+    <p>ระบบบันทึกดิจิทัล · Apparel Creations</p>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('form')">📋 กรอกใบดี</button>
+  <button class="tab-btn" onclick="switchTab('download')">📥 ประวัติ/PDF</button>
+  <button class="tab-btn" onclick="switchTab('stats')">📊 สถิติ</button>
+  <button class="tab-btn" onclick="switchTab('master')">⚙️ ข้อมูลหลัก</button>
+</div>
+
+<div class="wrap">
+
+<div id="page-form" class="page active">
+
+  <div class="form-card">
+    <div class="form-titlebar">
+      <div class="logo">Apparel<br>Creations</div>
+      <div class="form-main-title">ใบดีขั้นตอนผลิต</div>
+      <div class="page-num">หน้า 1/</div>
+    </div>
+    <div class="form-body">
+      <div class="frow">
+        <span class="flabel">วันที่ :</span>
+        <input type="date" id="f-date" class="finput" style="max-width:160px">
+      </div>
+      <div class="frow">
+        <span class="flabel">Mer :</span>
+        <select id="f-mer-text" class="finput" style="max-width:200px"><option value="">-- เลือก Mer --</option></select>
+      </div>
+      <div class="frow"><span class="flabel">แบรนด์ :</span>
+        <select id="f-brand" class="finput"><option value="">-- เลือกแบรนด์ --</option></select>
+      </div>
+      <div class="frow"><span class="flabel">ลูกค้า :</span><input type="text" id="f-customer" class="finput" placeholder="ชื่อลูกค้า"></div>
+      <div class="frow"><span class="flabel" style="min-width:130px">ชื่อรุ่น (ถ้ามี) :</span><input type="text" id="f-model" class="finput" placeholder="เช่น Action Tee"></div>
+      <div class="frow">
+        <span class="flabel" style="min-width:130px">จำนวนผลิต :</span>
+        <input type="number" id="f-qty" class="finput" style="width:68px;flex:none" placeholder="300" min="0">
+        <span class="unit">ตัว</span>
+        <span class="flabel" style="min-width:auto">ไซส์</span>
+        <input type="text" id="f-size" class="finput" style="max-width:120px" placeholder="S-XL">
+      </div>
+      <div class="frow">
+        <span class="flabel" style="min-width:130px">จำนวนสี :</span>
+        <input type="number" id="f-colors" class="finput" style="width:68px;flex:none" placeholder="5" min="0">
+        <span class="unit">สี ·</span>
+        <input type="number" id="f-per-color" class="finput" style="width:68px;flex:none" placeholder="60" min="0">
+        <span class="unit">ตัว/สี</span>
+      </div>
+      <div class="frow">
+        <label class="ck"><input type="checkbox" id="f-sample-real"> มีตัวอย่างจริง</label>
+        <label class="ck"><input type="checkbox" id="f-sample-pic"> ตีราคาจากรูป</label>
+      </div>
+      <div class="sec-label">📝 รายละเอียดงาน</div>
+      <textarea class="ta" id="f-detail" rows="2" placeholder="รายละเอียดงาน..."></textarea>
+      <div class="sec-label">➕ เพิ่มเติม</div>
+      <div class="check-row">
+        <label class="ck"><input type="checkbox" id="cx-pak"> ปัก<input class="ck-note" type="text" id="cx-pak-n" placeholder="จด"></label>
+        <label class="ck"><input type="checkbox" id="cx-print"> พิมพ์<input class="ck-note" type="text" id="cx-print-n" placeholder="จด"></label>
+        <label class="ck"><input type="checkbox" id="cx-tag"> ตัวรีดป้ายไซส์</label>
+        <label class="ck"><input type="checkbox" id="cx-big"> ตัวรีดใหญ่<input class="ck-note" type="text" id="cx-big-n" placeholder="จด"></label>
+        <label class="ck"><input type="checkbox" id="cx-rib"> รีดวีราเน่รองปัก</label>
+        <label class="ck"><input type="checkbox" id="cx-send"> ส่งซัก<input class="ck-note" type="text" id="cx-send-n" placeholder="จด"></label>
+        <label class="ck"><input type="checkbox" id="cx-small"> ตัวรีดเล็ก<input class="ck-note" type="text" id="cx-small-n" placeholder="จด"></label>
+      </div>
+      <div class="sec-hdr">รูป และ รายละเอียดสินค้า</div>
+      <div class="upload-zone">
+        <input type="file" accept="image/*" multiple id="imgInput" onchange="handleImages(this)">
+        <div class="upload-icon">📷</div>
+        <div class="upload-txt">กดเพื่อแนบรูปสินค้า</div>
+        <div class="upload-hint">เพิ่มได้หลายรูป · JPG, PNG, HEIC</div>
+      </div>
+      <div class="img-grid" id="imgGrid"></div>
+      <div class="two-col" style="margin-top:12px">
+        <div>
+          <div class="note-label">📌 Note ฝ่ายผลิต</div>
+          <textarea class="ta" id="f-note-prod" rows="3" placeholder="บันทึกฝ่ายผลิต..."></textarea>
+        </div>
+        <div>
+          <div class="note-label">📌 Note ฝ่ายขาย</div>
+          <textarea class="ta" id="f-note-sales" rows="3" placeholder="บันทึกฝ่ายขาย..."></textarea>
+        </div>
+      </div>
+      <div class="two-col" style="margin-top:14px">
+        <div>
+          <div class="frow"><span class="flabel" style="min-width:130px">ผู้ดูแล (เมอร์) :</span><input type="text" id="f-supervisor" class="finput"></div>
+          <div class="frow"><span class="flabel" style="min-width:130px">จำนวนคนเย็บ :</span><input type="number" id="f-sewers" class="finput" style="width:68px;flex:none" min="0"><span class="unit">คน</span></div>
+          <div class="frow"><span class="flabel" style="min-width:130px">จำนวนตัว/ชม. :</span><input type="number" id="f-rate" class="finput" style="width:68px;flex:none" min="0"><span class="unit">ตัว</span></div>
+          <div class="frow"><span class="flabel" style="min-width:130px">ประเมินค่าแรง :</span><input type="number" id="f-est-wage" class="finput" style="width:68px;flex:none" min="0"><span class="unit">บาท</span></div>
+        </div>
+        <div>
+          <div class="note-label">✅ Confirmed ราคา/รายละเอียด</div>
+          <textarea class="ta" id="f-confirmed" rows="5" placeholder="ราคาที่ confirmed..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-titlebar">
+      <div class="logo">Apparel<br>Creations</div>
+      <div class="form-main-title">ขั้นตอนการเย็บ</div>
+      <div class="page-num">หน้า 2/</div>
+    </div>
+    <div class="form-body">
+      <div class="sec-label">⚙️ ตารางขั้นตอนการผลิต</div>
+      
+      <div class="step-tbl-wrap">
+        <table class="step-tbl" id="stepTableEl">
+          <thead>
+            <tr>
+              <th>ลำดับ</th>
+              <th>ชิ้นส่วน</th>
+              <th>ขั้นตอนการเย็บ</th>
+              <th>เครื่องจักร</th>
+              <th>เวลา (วินาที)</th>
+              <th>คนงาน</th>
+              <th>หมายเหตุ</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="stepTableBody"></tbody>
+          <tfoot id="stepTableFoot"></tfoot>
+        </table>
+      </div>
+      <button class="add-step-btn" onclick="addStepRow()">➕ เพิ่มแถวขั้นตอน</button>
+      
+      <div class="wf-wrap">
+        <div class="wf-box"><div class="wf-hdr warn">ข้อควรระวัง</div><textarea class="wfta" id="f-warning" placeholder="บันทึกข้อควรระวัง..."></textarea></div>
+        <div class="wf-box"><div class="wf-hdr fix">วิธีแก้ไข</div><textarea class="wfta" id="f-solution" placeholder="บันทึกวิธีแก้ไข..."></textarea></div>
+      </div>
+      <div class="actual-wrap">
+        <div class="actual-hdr">ผลิตจริง</div>
+        <div class="actual-grid">
+          <div class="af"><label>เริ่มเย็บ วันที่/เวลา</label><input type="datetime-local" id="f-start-dt" class="ainput"></div>
+          <div class="af"><label>จบ วันที่</label><input type="datetime-local" id="f-end-dt" class="ainput"></div>
+          <div class="af"><label>จำนวนคนเย็บ</label><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input type="number" id="f-actual-sewers" class="ainput" min="0" style="max-width:64px"><span class="unit">คน · ใช้เวลา</span><input type="number" id="f-actual-days" class="ainput" min="0" style="max-width:56px"><span class="unit">วัน</span></div></div>
+          <div class="af"><label>ตัว/ชั่วโมง</label><input type="number" id="f-actual-rate" class="ainput" min="0"><div class="anote">*เฉลี่ยจบตัว*</div></div>
+          <div class="af"><label>ค่าแรงเย็บจริง</label><input type="number" id="f-actual-wage" class="ainput" min="0"><div class="anote">*ไม่รวม ตัด QC รีด แฟ็ก*</div></div>
+          <div class="af"><label>ประเมินทุนรวมตัด-แฟ็ก</label><input type="number" id="f-actual-total" class="ainput" min="0"></div>
+        </div>
+        <div style="margin-top:10px">
+          <div class="note-label">หมายเหตุ</div>
+          <textarea class="ta" id="f-remark" rows="2" placeholder="หมายเหตุ..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="btns">
+    <button class="btn-clear" onclick="clearForm()">🗑 ล้างฟอร์ม</button>
+    <button class="btn-save" onclick="openPreview()">👁 ดูตัวอย่าง / บันทึก</button>
+  </div>
+
+</div><div id="page-download" class="page">
+  <div class="form-card" style="padding:22px;text-align:center">
+    <div style="font-size:50px;margin-bottom:8px">📥</div>
+    <div style="font-size:22px;font-weight:700;color:var(--primary)">ประวัติใบดี & ดาวน์โหลด PDF</div>
+    <div style="font-size:19px;color:var(--muted);margin-top:4px">กดปุ่มดาวน์โหลด PDF ได้เลย</div>
+  </div>
+  <div id="downloadList"></div>
+  <div id="noDownloads" class="empty"><div class="ei">📋</div><p>ยังไม่มีบันทึกใบดี<br>กรุณากรอกและบันทึกก่อน</p></div>
+</div>
+
+<div id="page-stats" class="page">
+  <div class="stat-hdr"><h2>📊 สถิติการผลิต</h2><p style="opacity:.8;font-size:19px;margin-top:3px">ข้อมูลรวมทั้งหมด</p></div>
+  <div class="stat-grid">
+    <div class="stat-box"><div class="sn" id="st-total">0</div><div class="sl">ใบดีทั้งหมด</div></div>
+    <div class="stat-box"><div class="sn" id="st-steps">0</div><div class="sl">ขั้นตอนรวม</div></div>
+    <div class="stat-box"><div class="sn" id="st-avg">0</div><div class="sl">เฉลี่ยขั้นตอน/ใบ</div></div>
+    <div class="stat-box"><div class="sn" id="st-qty">0</div><div class="sl">ตัวผลิตรวม</div></div>
+  </div>
+  <div class="form-card" style="padding:16px 18px">
+    <div class="sec-label">👕 สถิติตามรุ่น / แบรนด์</div>
+    <div id="typeStatsList"></div>
+    <div id="emptyStats" class="empty" style="padding:28px"><div class="ei" style="font-size:42px">📊</div><p>ยังไม่มีข้อมูล</p></div>
+  </div>
+</div>
+
+<div id="page-master" class="page">
+  <div class="stat-hdr"><h2>⚙️ ข้อมูลหลัก</h2><p style="opacity:.8;font-size:19px;margin-top:3px">จัดการรายการ Mer · แบรนด์ · ชิ้นส่วน · ขั้นตอน · เครื่องจักร</p></div>
+  <div style="padding:0 16px 24px">
+
+    <div class="form-card" style="padding:16px 18px;margin-bottom:16px">
+      <div class="sec-label">🎨 Mer</div>
+      <div id="master-mers" class="master-list"></div>
+      <div class="master-add-row">
+        <input id="add-mer-inp" class="master-inp" type="text" placeholder="เพิ่ม Mer ใหม่..." onkeydown="if(event.key==='Enter')addMasterItem('mer')">
+        <button class="master-add-btn" onclick="addMasterItem('mer')">+ เพิ่ม</button>
+      </div>
+    </div>
+
+    <div class="form-card" style="padding:16px 18px;margin-bottom:16px">
+      <div class="sec-label">🏷️ แบรนด์ (Brand)</div>
+      <div id="master-brands" class="master-list"></div>
+      <div class="master-add-row">
+        <input id="add-brand-inp" class="master-inp" type="text" placeholder="เพิ่มแบรนด์ใหม่..." onkeydown="if(event.key==='Enter')addMasterItem('brand')">
+        <button class="master-add-btn" onclick="addMasterItem('brand')">+ เพิ่ม</button>
+      </div>
+    </div>
+
+    <div class="form-card" style="padding:16px 18px;margin-bottom:16px">
+      <div class="sec-label">🧩 ชิ้นส่วน (Parts)</div>
+      <div id="master-parts" class="master-list"></div>
+      <div class="master-add-row">
+        <input id="add-part-inp" class="master-inp" type="text" placeholder="เพิ่มชิ้นส่วนใหม่..." onkeydown="if(event.key==='Enter')addMasterItem('part')">
+        <button class="master-add-btn" onclick="addMasterItem('part')">+ เพิ่ม</button>
+      </div>
+    </div>
+
+    <div class="form-card" style="padding:16px 18px;margin-bottom:16px">
+      <div class="sec-label">🧵 ขั้นตอนการเย็บ (Sewing Operations)</div>
+      <div id="master-steps" class="master-list"></div>
+      <div class="master-add-row">
+        <input id="add-step-inp" class="master-inp" type="text" placeholder="เพิ่มขั้นตอนใหม่..." onkeydown="if(event.key==='Enter')addMasterItem('step')">
+        <button class="master-add-btn" onclick="addMasterItem('step')">+ เพิ่ม</button>
+      </div>
+    </div>
+
+    <div class="form-card" style="padding:16px 18px;margin-bottom:16px">
+      <div class="sec-label">🔧 เครื่องจักร (Machines)</div>
+      <div id="master-machines" class="master-list"></div>
+      <div class="master-add-row">
+        <input id="add-machine-inp" class="master-inp" type="text" placeholder="เพิ่มเครื่องจักรใหม่..." onkeydown="if(event.key==='Enter')addMasterItem('machine')">
+        <button class="master-add-btn" onclick="addMasterItem('machine')">+ เพิ่ม</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><div class="toast hidden" id="toast"></div>
+
+<div id="pvModal" style="display:none" class="pv-overlay" onclick="if(event.target===this)closePreview()">
+  <div class="pv-sheet">
+    <div class="pv-topbar">
+      <button class="pv-btn-back" onclick="closePreview()">← กลับแก้ไข</button>
+      <span class="pv-topbar-title">ตรวจสอบใบดี</span>
+      <button class="pv-btn-save" onclick="confirmSave()">💾 ยืนยันบันทึก</button>
+    </div>
+    <div class="pv-body">
+      <div id="pvBody"></div>
+      <div class="pv-bottom">
+        <button class="pv-bottom-back" onclick="closePreview()">← กลับแก้ไข</button>
+        <button class="pv-bottom-save" onclick="confirmSave()">💾 ยืนยันบันทึกใบดี</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ CONSTANTS ═══ */
+const DEF_PARTS=['ปกเสื้อ','ปกหน้า','ปกกระเป๋า','ปากกระเป๋า','ตัวกระเป๋า','กระเป๋าหน้า','กระเป๋าหลัง','กระเป๋าใน','สายไหล่','สายเอว','ปลายแขน','ตัวใน','ตัวนอก','แขนซ้าย','แขนขวา','ขอบแขน','ขอบเอว','ขอบล่าง','เอว','ขาใน','ขานอก','คอเสื้อ','ซิป','ซิปไหล่','ซิปหน้า','ยางเอว','ป้าย','ลูกไม้','ฟองน้ำ','ตะขอ','ตะขอหน้า'];
+const DEF_ACTIONS=['เย็บติด','เย็บต่อ','เย็บทับ','เย็บมัด','เย็บกัน','เย็บคัด','เย็บหา','เย็บเข้า','เย็บปิด','เย็บพับ','พับกันลับ','พับข้าง','พับเข้า','พับต่อ','ตัดขอบ','ตัดยาว','ตัดม้วย','ตัดลูกไม้','รีด','รีดตัวกระเป๋า','รีดวีรา','สกรีดตำแหน่ง','สกรีน','ย้ำ','ย้ำสาย','ย้ำยาง','คาร์','คาร์ชาย','คาร์กัดตัว','วาดปก','วาดมาร์ค','ติดม้วย','ติดป้าย','ลักรัง','มาร์ค'];
+const DEF_MACHINES=['จักรเข็มเดี่ยว','จักรเข็มคู่','จักรโพ้ง','จักรลา','จักรซิกแซก','จักรติดกระดุม','จักรทำรังดุม','จักรดึงยาง','จักรแท็ก (ย้ำ)','จักรแพทเทิร์น'];
+const DEF_STEPS = [
+  {part:'ตัวหน้า/ตัวหลัง', step:'เย็บต่อไหล่',      machine:'จักรลา',            time:18,  workers:1, note:''},
+  {part:'ปก',              step:'เย็บติดปก',        machine:'จักรลา',            time:45,  workers:1, note:''},
+  {part:'ปก',              step:'เย็บทับปก',        machine:'จักรลา',            time:20,  workers:1, note:''},
+  {part:'สาบหน้า',         step:'เย็บติดสาบหน้า',   machine:'จักรลา',            time:50,  workers:1, note:''},
+  {part:'สาบหน้า',         step:'ถักรังดุม',        machine:'เครื่องรังดุม',     time:15,  workers:1, note:''},
+  {part:'สาบหน้า',         step:'ติดกระดุม',        machine:'เครื่องติดกระดุม',  time:12,  workers:1, note:''},
+  {part:'แขน',             step:'เย็บติดแขน',       machine:'โพ้ง',              time:35,  workers:1, note:''},
+  {part:'ลำตัว',           step:'เย็บปิดข้าง',      machine:'โพ้ง 4 เส้น',       time:30,  workers:1, note:''},
+  {part:'แขน',             step:'เย็บชายแขน',       machine:'จักรคัฟเวอร์',      time:25,  workers:1, note:''},
+  {part:'ชายเสื้อ',        step:'เย็บชายล่าง',      machine:'จักรคัฟเวอร์',      time:35,  workers:1, note:''},
+  {part:'คอเสื้อ',         step:'ติดป้ายคอ',        machine:'จักรลา',            time:10,  workers:1, note:''},
+  {part:'ทั้งตัว',         step:'รีดเก็บงาน',       machine:'เตารีดไอน้ำ',       time:20,  workers:1, note:''},
+  {part:'ทั้งตัว',         step:'QC ตรวจสอบ',      machine:'-',                 time:15,  workers:1, note:''},
+];
+const SEW_STEPS = [
+  'เย็บต่อไหล่','เย็บติดปก','เย็บทับปก','เย็บติดสาบหน้า','เย็บติดสาบข้าง',
+  'เย็บติดแขน','เย็บปิดข้าง','เย็บชายแขน','เย็บชายล่าง','เย็บต่อไหล่หลัง',
+  'เย็บติดคอ','เย็บปิดคอ','เย็บทบคอ','ติดป้ายคอ','เย็บติดซิป','เย็บปิดซิป',
+  'เย็บติดกระเป๋า','เย็บปากกระเป๋า','เย็บทับกระเป๋า','เย็บติดสายเอว',
+  'เย็บพับชาย','เย็บม้วนชาย','เย็บติดยาง','เย็บดึงยาง','ถักรังดุม',
+  'ติดกระดุม','ย้ำตะขอ','ย้ำสาย','ย้ำหูกางเกง','เย็บติดลูกไม้',
+  'เย็บติดฟองน้ำ','รีดเก็บงาน','รีดวีรา','QC ตรวจสอบ','พับแพ็ค',
+];
+const MACHINE_LIST = [
+  'จักรลา','จักรเข็มเดี่ยว','จักรเข็มคู่','จักรโพ้ง','โพ้ง','โพ้ง 4 เส้น',
+  'จักรคัฟเวอร์','จักรซิกแซก','จักรติดกระดุม','เครื่องติดกระดุม',
+  'จักรทำรังดุม','เครื่องรังดุม','จักรดึงยาง','จักรแท็ก (ย้ำ)',
+  'จักรแพทเทิร์น','เตารีดไอน้ำ','เตารีด','-',
+];
+const PART_LIST = [
+  'ตัวหน้า','ตัวหลัง','ตัวหน้า/ตัวหลัง','ลำตัว','ปก','สาบหน้า','สาบข้าง',
+  'แขนซ้าย','แขนขวา','แขน','ชายแขน','ชายเสื้อ','คอเสื้อ',
+  'กระเป๋าหน้า','กระเป๋าหลัง','ปากกระเป๋า','ตัวกระเป๋า',
+  'เอว','สายเอว','หูกางเกง','ขาใน','ขานอก','เป้า',
+  'ซิป','ป้าย','ลูกไม้','ฟองน้ำ','ทั้งตัว',
+];
+const MER_LIST   = ['เหลือง','แดง','เขียว','ฟ้า','ชมพู','ส้ม','ม่วง','ขาว','ดำ','เทา'];
+const BRAND_LIST = ['Apparel Creations','AC Sport','AC Kids','Private Label'];
+
+/* ═══ STATE ═══ */
+let records = JSON.parse(localStorage.getItem('acRec3')||'[]');
+let imgFiles = [];
+let merSel   = ['เหลือง'];
+let stepRows = JSON.parse(JSON.stringify(DEF_STEPS));
+let customParts = [], customActions = [], customMachines = [];
+let selectedPart = "", selectedAction = "", selectedMachine = "";
+let _pending = null;
+
+/* ═══ HELPERS ═══ */
+const gv  = id => { const e=document.getElementById(id); return e?e.value.trim():''; };
+const gc  = id => { const e=document.getElementById(id); return e?e.checked:false; };
+const esc = s  => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* ═══ MER / BRAND DROPDOWNS ═══ */
+/* เรียงไทยก่อน → อังกฤษ */
+function sortThaiFirst(arr) {
+  const isThai = s => /^[\u0E00-\u0E7F]/.test(s||'');
+  const thai = arr.filter(isThai).sort((a,b) => a.localeCompare(b,'th'));
+  const eng  = arr.filter(s => !isThai(s)).sort((a,b) => a.localeCompare(b,'en'));
+  return [...thai, ...eng];
+}
+
+function renderFormDropdowns() {
+  const merSel   = document.getElementById('f-mer-text');
+  const brandSel = document.getElementById('f-brand');
+  if (merSel) {
+    const curMer = merSel.value;
+    merSel.innerHTML = `<option value="">-- เลือก Mer --</option>` +
+      sortThaiFirst(MER_LIST).map(m => `<option value="${esc(m)}" ${m===curMer?'selected':''}>${esc(m)}</option>`).join('');
+  }
+  if (brandSel) {
+    const curBrand = brandSel.value;
+    brandSel.innerHTML = `<option value="">-- เลือกแบรนด์ --</option>` +
+      sortThaiFirst(BRAND_LIST).map(b => `<option value="${esc(b)}" ${b===curBrand?'selected':''}>${esc(b)}</option>`).join('');
+  }
+}
+
+function toggleMer(el) { /* legacy no-op */ }
+
+/* ═══ IMAGES ═══ */
+function handleImages(inp) {
+  [...inp.files].forEach(f => {
+    const r = new FileReader();
+    r.onload = e => { imgFiles.push({name:f.name, data:e.target.result}); renderImgs(); };
+    r.readAsDataURL(f);
+  });
+  inp.value='';
+}
+function renderImgs() {
+  document.getElementById('imgGrid').innerHTML = imgFiles.map((img,i) =>
+    `<div class="img-thumb"><img src="${img.data}" alt="${esc(img.name)}">
+     <button class="del" onclick="rmImg(${i})">✕</button></div>`).join('');
+}
+function rmImg(i) { imgFiles.splice(i,1); renderImgs(); }
+
+/* ═══ STEP TABLE LOGIC ═══ */
+function addStepRow(data) {
+  stepRows.push(data || {step:'', machine:'', time:0, workers:1, note:''});
+  renderSteps();
+}
+
+function removeStepRow(i) {
+  stepRows.splice(i, 1);
+  renderSteps();
+}
+
+function updateStepField(i, field, val) {
+  if (field === 'time' || field === 'workers') stepRows[i][field] = parseInt(val)||0;
+  else stepRows[i][field] = val;
+  updateStepTotals();
+}
+
+function secToMin(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}.${String(sec).padStart(2,'0')}`;
+}
+
+function getMachineBreakdown(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const m = r.machine || '-';
+    map[m] = (map[m] || 0) + 1;
+  });
+  return map;
+}
+
+function updateStepTotals() {
+  const totalSec = stepRows.reduce((s,r) => s + (parseInt(r.time)||0), 0);
+  const breakdown = getMachineBreakdown(stepRows);
+  const foot = document.getElementById('stepTableFoot');
+  if (!foot) return;
+
+  const machineRows = Object.entries(breakdown).map(([m, count]) =>
+    `<tr style="background:#f0f7ff;">
+      <td colspan="3" style="padding:5px 10px;text-align:right;font-size:19px;color:var(--muted);">${esc(m)}</td>
+      <td style="padding:5px 8px;text-align:center;font-size:19px;color:var(--primary);font-weight:700;">${count}</td>
+      <td colspan="3" style="padding:5px 8px;font-size:22px;color:var(--muted);">ตัว</td>
+    </tr>`
+  ).join('');
+
+  foot.innerHTML = `
+    ${machineRows}
+    <tr class="step-tbl-total" style="border-top:2.5px solid var(--tan);">
+      <td colspan="3" style="text-align:right;font-size:19px;">⏱️ รวมทั้งหมด</td>
+      <td style="text-align:center;font-size:19px;color:var(--primary);">${secToMin(totalSec)}</td>
+      <td colspan="3" style="font-size:19px;color:var(--muted);">นาที (${totalSec} วิ)</td>
+    </tr>`;
+}
+
+function makeSelect(list, val, idx, field) {
+  const base = list.includes(val) ? list : (val ? [val, ...list] : list);
+  const sorted = sortThaiFirst(base);
+  const opts = `<option value="">-- เลือก --</option>` +
+    sorted.map(o => `<option value="${esc(o)}" ${o===val?'selected':''}>${esc(o)}</option>`).join('') +
+    `<option value="__custom__">✏️ พิมพ์เอง...</option>`;
+  return `<select class="step-tbl-select" onchange="handleSelectChange(${idx},'${field}',this)">${opts}</select>`;
+}
+
+function handleSelectChange(i, field, el) {
+  if (el.value === '__custom__') {
+    const custom = prompt('พิมพ์ค่าที่ต้องการ:');
+    if (custom && custom.trim()) {
+      stepRows[i][field] = custom.trim();
+      if (field === 'part'    && !PART_LIST.includes(custom.trim()))    PART_LIST.push(custom.trim());
+      if (field === 'step'    && !SEW_STEPS.includes(custom.trim()))    SEW_STEPS.push(custom.trim());
+      if (field === 'machine' && !MACHINE_LIST.includes(custom.trim())) MACHINE_LIST.push(custom.trim());
+    }
+    renderSteps();
+  } else {
+    updateStepField(i, field, el.value);
+  }
+}
+
+function renderSteps() {
+  const tbody = document.getElementById('stepTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = stepRows.map((r,i) => `
+    <tr>
+      <td class="td-num">${i+1}</td>
+      <td class="td-part">${makeSelect(PART_LIST, r.part||'', i, 'part')}</td>
+      <td class="td-act">${makeSelect(SEW_STEPS, r.step||'', i, 'step')}</td>
+      <td class="td-mac">${makeSelect(MACHINE_LIST, r.machine||'', i, 'machine')}</td>
+      <td class="td-time"><input class="step-tbl-input" type="number" min="0" value="${r.time||''}" oninput="updateStepField(${i},'time',this.value)"></td>
+      <td class="td-wrk"><input class="step-tbl-input" type="number" min="1" value="${r.workers||1}" oninput="updateStepField(${i},'workers',this.value)"></td>
+      <td class="td-note"><input class="step-tbl-input" value="${esc(r.note||'')}" placeholder="หมายเหตุ" oninput="updateStepField(${i},'note',this.value)"></td>
+      <td class="td-del"><button class="step-delete" style="padding:4px 8px;font-size:22px;" onclick="removeStepRow(${i})">✕</button></td>
+    </tr>`).join('');
+  updateStepTotals();
+}
+
+/* ═══ MASTER DATA LOGIC ═══ */
+const MASTER_CFG = {
+  mer:     { list: () => MER_LIST,     id: 'master-mers',     inp: 'add-mer-inp',     icon: '🎨', label: 'Mer' },
+  brand:   { list: () => BRAND_LIST,   id: 'master-brands',   inp: 'add-brand-inp',   icon: '🏷️', label: 'แบรนด์' },
+  part:    { list: () => PART_LIST,    id: 'master-parts',    inp: 'add-part-inp',    icon: '🧩', label: 'ชิ้นส่วน' },
+  step:    { list: () => SEW_STEPS,    id: 'master-steps',    inp: 'add-step-inp',    icon: '🧵', label: 'ขั้นตอน' },
+  machine: { list: () => MACHINE_LIST, id: 'master-machines', inp: 'add-machine-inp', icon: '🔧', label: 'เครื่องจักร' },
+};
+
+function renderMaster() {
+  Object.entries(MASTER_CFG).forEach(([type, cfg]) => {
+    const el = document.getElementById(cfg.id);
+    if (!el) return;
+    const list = cfg.list();
+    if (!list.length) { el.innerHTML = `<div class="master-empty">ยังไม่มีรายการ</div>`; return; }
+    el.innerHTML = list.map((item, i) => `
+      <div class="master-item" id="mitem-${type}-${i}">
+        <span class="master-item-icon">${cfg.icon}</span>
+        <span class="master-item-name" id="mname-${type}-${i}">${esc(item)}</span>
+        <div class="master-item-btns">
+          <button class="master-edit-btn" onclick="startEditMaster('${type}',${i})">✏️ แก้ไข</button>
+          <button class="master-del-btn"  onclick="deleteMasterItem('${type}',${i})">🗑️</button>
+        </div>
+      </div>`).join('');
+  });
+}
+
+function startEditMaster(type, i) {
+  const cfg = MASTER_CFG[type];
+  const list = cfg.list();
+  const nameEl = document.getElementById(`mname-${type}-${i}`);
+  const itemEl = document.getElementById(`mitem-${type}-${i}`);
+  if (!nameEl || !itemEl) return;
+  const cur = list[i];
+  nameEl.outerHTML = `<input class="master-item-name-edit" id="medit-${type}-${i}" value="${esc(cur)}" onkeydown="if(event.key==='Enter')saveMasterEdit('${type}',${i});if(event.key==='Escape')renderMaster()">`;
+  const btnsEl = itemEl.querySelector('.master-item-btns');
+  btnsEl.innerHTML = `
+    <button class="master-save-btn" onclick="saveMasterEdit('${type}',${i})">💾 บันทึก</button>
+    <button class="master-del-btn"  onclick="renderMaster()">✕ ยกเลิก</button>`;
+  document.getElementById(`medit-${type}-${i}`)?.focus();
+}
+
+function saveMasterEdit(type, i) {
+  const inp = document.getElementById(`medit-${type}-${i}`);
+  const val = inp?.value.trim();
+  if (!val) { showToast('กรุณาใส่ชื่อ', 'err'); return; }
+  const list = MASTER_CFG[type].list();
+  list[i] = val;
+  saveMasterToStorage();
+  renderMaster();
+  renderFormDropdowns();
+  showToast('แก้ไขสำเร็จ ✓');
+}
+
+function deleteMasterItem(type, i) {
+  const cfg = MASTER_CFG[type];
+  const list = cfg.list();
+  const itemEl = document.getElementById(`mitem-${type}-${i}`);
+  if (!itemEl) return;
+  // Show inline confirm buttons instead of confirm()
+  const btnsEl = itemEl.querySelector('.master-item-btns');
+  btnsEl.innerHTML = `
+    <span style="font-size:19px;color:#c0392b;font-weight:600;">ลบแน่ใจ?</span>
+    <button class="master-del-btn" style="background:#c0392b;color:#fff;border-color:#c0392b;" onclick="confirmDeleteMaster('${type}',${i})">✓ ลบ</button>
+    <button class="master-edit-btn" onclick="renderMaster()">✕ ยกเลิก</button>`;
+}
+
+function confirmDeleteMaster(type, i) {
+  const list = MASTER_CFG[type].list();
+  list.splice(i, 1);
+  saveMasterToStorage();
+  renderMaster();
+  renderFormDropdowns();
+  showToast('ลบสำเร็จ');
+}
+
+function addMasterItem(type) {
+  const cfg = MASTER_CFG[type];
+  const inp = document.getElementById(cfg.inp);
+  const val = inp?.value.trim();
+  if (!val) { showToast('กรุณาใส่ชื่อ', 'err'); return; }
+  const list = cfg.list();
+  if (list.includes(val)) { showToast('มีรายการนี้อยู่แล้ว', 'err'); return; }
+  list.push(val);
+  if (inp) inp.value = '';
+  saveMasterToStorage();
+  renderMaster();
+  renderFormDropdowns();
+  showToast(`เพิ่ม "${val}" สำเร็จ ✓`);
+}
+
+function saveMasterToStorage() {
+  localStorage.setItem('acMaster', JSON.stringify({
+    mers: MER_LIST, brands: BRAND_LIST,
+    parts: PART_LIST, steps: SEW_STEPS, machines: MACHINE_LIST
+  }));
+}
+
+function loadMasterFromStorage() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('acMaster') || 'null');
+    if (!saved) return;
+    if (saved.mers?.length)     { MER_LIST.length = 0;     MER_LIST.push(...saved.mers); }
+    if (saved.brands?.length)   { BRAND_LIST.length = 0;   BRAND_LIST.push(...saved.brands); }
+    if (saved.parts?.length)    { PART_LIST.length = 0;    PART_LIST.push(...saved.parts); }
+    if (saved.steps?.length)    { SEW_STEPS.length = 0;    SEW_STEPS.push(...saved.steps); }
+    if (saved.machines?.length) { MACHINE_LIST.length = 0; MACHINE_LIST.push(...saved.machines); }
+  } catch(e) {}
+}
+function renderInputTags(){}
+function selectPartInput(){}
+function addCustomPartDef(){}
+function addCustomActionDef(){}
+function addCustomMachineDef(){}
+function addSubStep(){}
+function removeSubStep(){}
+function removePartGroup(){}
+
+/* ── Tabs ── */
+function switchTab(t) {
+  document.querySelectorAll('.page,.tab-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+t).classList.add('active');
+  const btn = document.querySelector(`[onclick="switchTab('${t}')"]`);
+  if(btn) btn.classList.add('active');
+  window.scrollTo(0,0);
+  if(t==='download') renderDownloads();
+  if(t==='stats') renderStats();
+  if(t==='master') renderMaster();
+}
+
+function showToast(m, err) {
+  const t=document.getElementById('toast');
+  if(!t) return;
+  t.textContent=m; t.className=`toast ${err?'err':''}`;
+  setTimeout(()=>t.classList.add('hidden'), 3000);
+}
+
+/* ── UI Helpers ── */
+function rtf(v, def='-') { return v ? esc(v) : `<span class="pv-blank">${def}</span>`; }
+function formatDateTime(dstr) {
+  if(!dstr) return '';
+  const d = new Date(dstr); if(isNaN(d)) return dstr;
+  return d.toLocaleString('th-TH',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function tf(v, wide=false) {
+  return wide ? `<div class="pv-tb ${v?'pv-tb-val':'pv-tb-empty'}">${v?esc(v):'ไม่มีข้อมูล'}</div>`
+              : `<div class="pv-fval ${!v?'empty':''}">${v?esc(v):'-'}</div>`;
+}
+
+/* ── Gather & Preview ── */
+function gatherData() {
+  const dtStr = gv('f-date');
+  let dispDate = '';
+  if (dtStr) {
+     const d = new Date(dtStr);
+     if (!isNaN(d)) dispDate = d.toLocaleDateString('th-TH', { year:'numeric', month:'long', day:'numeric' });
+  }
+  return {
+    date: dtStr, dispDate,
+    mer: gv('f-mer-text') ? [gv('f-mer-text')] : [],
+    merText: gv('f-mer-text'), brand: gv('f-brand'), customer: gv('f-customer'),
+    model: gv('f-model'), qty: gv('f-qty'), size: gv('f-size'),
+    colors: gv('f-colors'), perColor: gv('f-per-color'),
+    sampleReal: gc('f-sample-real'), samplePic: gc('f-sample-pic'),
+    detail: gv('f-detail'),
+    chk: {
+      pak: gc('cx-pak'), pak_n: gv('cx-pak-n'), print: gc('cx-print'), print_n: gv('cx-print-n'),
+      tag: gc('cx-tag'), big: gc('cx-big'), big_n: gv('cx-big-n'), rib: gc('cx-rib'),
+      send: gc('cx-send'), send_n: gv('cx-send-n'), small: gc('cx-small'), small_n: gv('cx-small-n')
+    },
+    imgs: imgFiles.map(img => img.data),
+    noteProd: gv('f-note-prod'), noteSales: gv('f-note-sales'),
+    supervisor: gv('f-supervisor'), sewers: gv('f-sewers'),
+    rate: gv('f-rate'), estWage: gv('f-est-wage'), confirmed: gv('f-confirmed'),
+    steps: JSON.parse(JSON.stringify(stepRows)),
+    warning: gv('f-warning'), solution: gv('f-solution'),
+    actual: {
+      start: gv('f-start-dt'), end: gv('f-end-dt'),
+      sewers: gv('f-actual-sewers'), days: gv('f-actual-days'),
+      rate: gv('f-actual-rate'), wage: gv('f-actual-wage'),
+      total: gv('f-actual-total'), remark: gv('f-remark')
+    }
+  };
+}
+
+function openPreview() {
+  const d = gatherData();
+  if(!d.brand && !d.customer && !d.model) { showToast('กรุณาระบุ แบรนด์, ลูกค้า หรือ รุ่น', true); return; }
+  _pending = d;
+
+  let h = '';
+  // --- หน้า 1 ---
+  h += `
+  <div class="pv-page">
+    <div class="pv-page-hdr">
+      <div class="pv-logo">Apparel<br>Creations</div>
+      <div class="pv-page-title">ใบดีขั้นตอนผลิต</div>
+      <div class="pv-page-num">หน้า 1/2</div>
+    </div>
+    <div class="pv-page-body">
+      <div class="pv-row4">
+        <div class="pv-field wide"><span class="pv-flabel">วันที่ :</span><span class="pv-fval">${rtf(d.dispDate)}</span></div>
+        <div class="pv-field wide"><span class="pv-flabel">Mer :</span><span class="pv-fval">${rtf(Array.isArray(d.mer)?d.mer.join(', '):(d.mer||d.merText||'-'))} </span></div>
+        <div class="pv-field wide"><span class="pv-flabel">แบรนด์ :</span><span class="pv-fval">${rtf(d.brand)}</span></div>
+        <div class="pv-field wide"><span class="pv-flabel">ลูกค้า :</span><span class="pv-fval">${rtf(d.customer)}</span></div>
+        <div class="pv-field wide"><span class="pv-flabel">ชื่อรุ่น :</span><span class="pv-fval">${rtf(d.model)}</span></div>
+      </div>
+      <div class="pv-row2">
+        <div class="pv-field"><span class="pv-flabel">จำนวนผลิต :</span><span class="pv-fval">${rtf(d.qty)} <span class="pv-unit">ตัว</span></span></div>
+        <div class="pv-field"><span class="pv-flabel">ไซส์ :</span><span class="pv-fval">${rtf(d.size)}</span></div>
+        <div class="pv-field"><span class="pv-flabel">จำนวนสี :</span><span class="pv-fval">${rtf(d.colors)} <span class="pv-unit">สี</span></span></div>
+        <div class="pv-field"><span class="pv-flabel">ตัว/สี :</span><span class="pv-fval">${rtf(d.perColor)} <span class="pv-unit">ตัว</span></span></div>
+      </div>
+      <div class="pv-checks">
+        <div class="pv-ck ${d.sampleReal?'on':''}"><span class="pv-ck-icon">${d.sampleReal?'☑':'☐'}</span> มีตัวอย่างจริง</div>
+        <div class="pv-ck ${d.samplePic?'on':''}"><span class="pv-ck-icon">${d.samplePic?'☑':'☐'}</span> ตีราคาจากรูป</div>
+      </div>
+      
+      <div class="pv-sec">📝 รายละเอียดงาน</div>
+      ${tf(d.detail, true)}
+
+      <div class="pv-sec">➕ เพิ่มเติม</div>
+      <div class="pv-extras">`;
+        const ecks = [
+          {l:'ปัก', c:d.chk.pak, n:d.chk.pak_n}, {l:'พิมพ์', c:d.chk.print, n:d.chk.print_n},
+          {l:'ตัวรีดป้ายไซส์', c:d.chk.tag}, {l:'ตัวรีดใหญ่', c:d.chk.big, n:d.chk.big_n},
+          {l:'รีดวีราเน่รองปัก', c:d.chk.rib}, {l:'ส่งซัก', c:d.chk.send, n:d.chk.send_n},
+          {l:'ตัวรีดเล็ก', c:d.chk.small, n:d.chk.small_n}
+        ];
+        ecks.forEach(x => {
+          h+=`<div class="pv-ck ${x.c?'on':''}"><span class="pv-ck-icon">${x.c?'☑':'☐'}</span> ${x.l} ${x.n?`<span class="pv-ck-note">(${esc(x.n)})</span>`:''}</div>`;
+        });
+  h += `
+      </div>
+
+      <div class="pv-sec">📷 รูปสินค้า</div>`;
+      if(d.imgs.length) h+=`<div class="pv-imgs">${d.imgs.map(i=>`<img src="${i}" class="pv-img">`).join('')}</div>`;
+      else h+=`<div class="pv-empty">ไม่ได้แนบรูป</div>`;
+      
+  h += `
+      <div class="pv-row2" style="margin-top:14px">
+        <div><div class="pv-nlabel">📌 Note ฝ่ายผลิต</div>${tf(d.noteProd, true)}</div>
+        <div><div class="pv-nlabel">📌 Note ฝ่ายขาย</div>${tf(d.noteSales, true)}</div>
+      </div>
+
+      <div class="pv-row2" style="margin-top:14px">
+        <div>
+           <div class="pv-field wide"><span class="pv-flabel">ผู้ดูแล (เมอร์) :</span>${tf(d.supervisor)}</div>
+           <div class="pv-field wide"><span class="pv-flabel">จำนวนคนเย็บ :</span><div class="pv-fval ${!d.sewers?'empty':''}">${d.sewers?`${esc(d.sewers)} <span class="pv-unit">คน</span>`:'-'}</div></div>
+           <div class="pv-field wide"><span class="pv-flabel">จำนวนตัว/ชม. :</span><div class="pv-fval ${!d.rate?'empty':''}">${d.rate?`${esc(d.rate)} <span class="pv-unit">ตัว</span>`:'-'}</div></div>
+           <div class="pv-field wide"><span class="pv-flabel">ประเมินค่าแรง :</span><div class="pv-fval ${!d.estWage?'empty':''}">${d.estWage?`${esc(d.estWage)} <span class="pv-unit">บาท</span>`:'-'}</div></div>
+        </div>
+        <div><div class="pv-nlabel">✅ Confirmed ราคา/รายละเอียด</div>${tf(d.confirmed, true)}</div>
+      </div>
+    </div>
+  </div>`;
+
+  // --- หน้า 2 ---
+  h += `
+  <div class="pv-page">
+    <div class="pv-page-hdr">
+      <div class="pv-logo">Apparel<br>Creations</div>
+      <div class="pv-page-title">ขั้นตอนการเย็บ</div>
+      <div class="pv-page-num">หน้า 2/2</div>
+    </div>
+    <div class="pv-page-body">
+      <div class="pv-sec">⚙️ ตารางขั้นตอนการผลิต</div>`;
+      if (d.steps.length) {
+        const totalSec = d.steps.reduce((s,r) => s+(parseInt(r.time)||0), 0);
+        const breakdown = getMachineBreakdown(d.steps);
+        const machineFootRows = Object.entries(breakdown).map(([m, count]) =>
+          `<tr style="background:#f0f7ff;">
+            <td colspan="4" style="padding:6px 8px;text-align:right;font-size:22px;color:var(--muted);">${esc(m)}</td>
+            <td style="padding:6px 8px;text-align:center;font-size:19px;font-weight:700;color:var(--primary);">${count}</td>
+            <td colspan="2" style="padding:6px 8px;font-size:11px;color:var(--muted);">ตัว</td>
+          </tr>`).join('');
+        h += `<div style="overflow-x:auto;border:1.5px solid #e0e0e0;border-radius:8px;margin-bottom:14px;">
+          <table style="width:100%;border-collapse:collapse;min-width:540px;font-size:19px;">
+            <thead>
+              <tr style="background:var(--primary);color:#fff;">
+                <th style="padding:8px 6px;text-align:center;white-space:nowrap;">ลำดับ</th>
+                <th style="padding:8px 6px;text-align:left;">ชิ้นส่วน</th>
+                <th style="padding:8px 6px;text-align:left;">ขั้นตอนการเย็บ</th>
+                <th style="padding:8px 6px;text-align:left;">เครื่องจักร</th>
+                <th style="padding:8px 6px;text-align:center;">เวลา (วิ)</th>
+                <th style="padding:8px 6px;text-align:center;">คนงาน</th>
+                <th style="padding:8px 6px;text-align:left;">หมายเหตุ</th>
+              </tr>
+            </thead>
+            <tbody>`;
+        d.steps.forEach((r,i) => {
+          h += `<tr style="${i%2===1?'background:#f9fbff':''}">
+            <td style="padding:7px 6px;text-align:center;font-weight:700;color:var(--primary);">${i+1}</td>
+            <td style="padding:7px 6px;color:var(--muted);">${esc(r.part||'')}</td>
+            <td style="padding:7px 6px;font-weight:600;">${esc(r.step||'')}</td>
+            <td style="padding:7px 6px;color:var(--muted);">${esc(r.machine||'')}</td>
+            <td style="padding:7px 6px;text-align:center;">${r.time||''}</td>
+            <td style="padding:7px 6px;text-align:center;">${r.workers||1}</td>
+            <td style="padding:7px 6px;font-size:22px;color:var(--muted);">${esc(r.note||'')}</td>
+          </tr>`;
+        });
+        h += `</tbody>
+            <tfoot>
+              ${machineFootRows}
+              <tr style="background:var(--tan-lt);border-top:2.5px solid var(--tan);">
+                <td colspan="3" style="padding:9px 8px;text-align:right;font-weight:700;color:#3a2800;font-size:22px;">⏱️ รวมทั้งหมด</td>
+                <td style="padding:9px 8px;text-align:center;font-weight:800;color:var(--primary);font-size:22px;">${secToMin(totalSec)}</td>
+                <td colspan="3" style="padding:9px 8px;font-weight:600;color:#3a2800;font-size:19px;">นาที (${totalSec} วิ)</td>
+              </tr>
+            </tfoot>
+          </table></div>`;
+      } else {
+        h += `<div class="pv-empty">ยังไม่มีการเพิ่มขั้นตอน</div>`;
+      }
+      
+  h += `
+      <div class="pv-wf">
+        <div class="pv-wf-box"><div class="pv-wf-hdr warn">ข้อควรระวัง</div><div class="pv-tb nb ${d.warning?'pv-tb-val':'pv-tb-empty'}">${d.warning?esc(d.warning):'-'}</div></div>
+        <div class="pv-wf-box"><div class="pv-wf-hdr fix">วิธีแก้ไข</div><div class="pv-tb nb ${d.solution?'pv-tb-val':'pv-tb-empty'}">${d.solution?esc(d.solution):'-'}</div></div>
+      </div>
+      
+      <div class="pv-actual">
+        <div class="pv-actual-hdr">ผลิตจริง</div>
+        <div class="pv-row2">
+          <div class="pv-field wide"><span class="pv-flabel">เริ่มเย็บ :</span>${tf(formatDateTime(d.actual.start))}</div>
+          <div class="pv-field wide"><span class="pv-flabel">จบ :</span>${tf(formatDateTime(d.actual.end))}</div>
+          <div class="pv-field wide"><span class="pv-flabel">คนเย็บ/เวลา :</span><div class="pv-fval">${d.actual.sewers||'-'} คน · ใช้เวลา ${d.actual.days||'-'} วัน</div></div>
+          <div class="pv-field wide"><span class="pv-flabel">ตัว/ชั่วโมง :</span><div class="pv-fval">${d.actual.rate||'-'} <span class="pv-unit">ตัว (เฉลี่ยจบตัว)</span></div></div>
+          <div class="pv-field wide"><span class="pv-flabel">ค่าแรงจริง :</span><div class="pv-fval">${d.actual.wage||'-'} <span class="pv-unit">บาท (ไม่รวม ตัด QC รีด แฟ็ก)</span></div></div>
+          <div class="pv-field wide"><span class="pv-flabel">ประเมินทุน :</span><div class="pv-fval">${d.actual.total||'-'} <span class="pv-unit">บาท</span></div></div>
+          <div class="pv-field wide" style="flex-direction:column;align-items:flex-start">
+             <span class="pv-flabel">หมายเหตุ :</span>
+             <div class="pv-fval" style="width:100%;margin-top:4px">${d.actual.remark?esc(d.actual.remark):'<span class="pv-blank">-</span>'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  
+  document.getElementById('pvBody').innerHTML = h;
+  document.getElementById('pvModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closePreview() {
+  document.getElementById('pvModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function confirmSave() {
+  if (!_pending) return;
+  _pending.id = Date.now();
+  records.unshift(_pending);
+  localStorage.setItem('acRec3', JSON.stringify(records));
+  closePreview();
+  clearForm();
+  switchTab('download');
+  showToast('บันทึกสำเร็จ');
+}
+
+/* ── Clear ── */
+function clearForm() {
+  document.querySelectorAll('input[type=text], input[type=number], input[type=date], input[type=datetime-local], textarea').forEach(e=>e.value='');
+  document.querySelectorAll('input[type=checkbox]').forEach(e=>e.checked=false);
+  const merEl = document.getElementById('f-mer-text');
+  const brandEl = document.getElementById('f-brand');
+  if (merEl) merEl.value = '';
+  if (brandEl) brandEl.value = '';
+  merSel=['เหลือง'];
+  imgFiles=[]; renderImgs();
+  
+  stepRows = JSON.parse(JSON.stringify(DEF_STEPS));
+  selectedPart = "";
+  selectedAction = "";
+  selectedMachine = "";
+  renderInputTags();
+  renderSteps();
+  
+  window.scrollTo({top:0, behavior:'smooth'});
+  showToast('ล้างฟอร์มแล้ว');
+}
+
+/* ── Download Records ── */
+function renderDownloads() {
+  const c = document.getElementById('downloadList');
+  const e = document.getElementById('noDownloads');
+  if(!records.length) { c.innerHTML=''; e.style.display='block'; return; }
+  e.style.display='none';
+  c.innerHTML = records.map((r,i) => {
+    // นับจำนวนขั้นตอนทั้งหมดของใบงานนี้
+    const steps = r.steps || [];
+    const totalSubSteps = steps[0]?.subSteps ? steps.reduce((s,g)=>s+(g.subSteps?.length||0),0) : steps.length;
+    return `
+      <div class="rec-card">
+        <div class="rec-hdr">
+          <div style="flex:1;min-width:0">
+            <div class="rec-title">${esc(r.model||r.brand||r.customer||'(ไม่ระบุ)')}</div>
+            <div class="rec-sub">${r.dispDate||'ไม่ระบุวันที่'} · เมอร์: ${Array.isArray(r.mer)?r.mer.join(', '):(r.mer||r.merText||'-')}<br>จำนวน: ${r.qty||0} · สี: ${r.colors||0}</div>
+          </div>
+          <div class="rec-badge"><span class="bn">${totalSubSteps}</span><span class="bl">ขั้นตอน</span></div>
+        </div>
+        <div class="rec-body">
+          <button class="btn-pdf" onclick="generatePDF(${i})">📄 ดาวน์โหลด PDF</button>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="btn-del" style="flex:1" onclick="if(confirm('ลบ?')) { records.splice(${i},1); localStorage.setItem('acRec3',JSON.stringify(records)); renderDownloads(); }">🗑 ลบ</button>
+            <button class="btn-del" style="flex:1;border-color:#a0bcd0;color:#1a5276" onclick="loadRec(${i})">✏️ โหลดข้อมูล</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function loadRec(idx) {
+  if(!confirm('เนื้อหาฟอร์มปัจจุบันจะถูกทับ ต้องการโหลดหรือไม่?')) return;
+  const r = records[idx];
+  gv_set('f-date', r.date);
+  gv_set('f-mer-text', r.merText || (r.mer && r.mer[0]) || '');
+  gv_set('f-brand', r.brand);
+  gv_set('f-customer', r.customer);
+  gv_set('f-model', r.model);
+  gv_set('f-qty', r.qty);
+  gv_set('f-size', r.size);
+  gv_set('f-colors', r.colors);
+  gv_set('f-per-color', r.perColor);
+  gc_set('f-sample-real', r.sampleReal);
+  gc_set('f-sample-pic', r.samplePic);
+  gv_set('f-detail', r.detail);
+  
+  const ck = r.chk || {};
+  gc_set('cx-pak', ck.pak); gv_set('cx-pak-n', ck.pak_n);
+  gc_set('cx-print', ck.print); gv_set('cx-print-n', ck.print_n);
+  gc_set('cx-tag', ck.tag);
+  gc_set('cx-big', ck.big); gv_set('cx-big-n', ck.big_n);
+  gc_set('cx-rib', ck.rib);
+  gc_set('cx-send', ck.send); gv_set('cx-send-n', ck.send_n);
+  gc_set('cx-small', ck.small); gv_set('cx-small-n', ck.small_n);
+  
+  imgFiles = (r.imgs||[]).map(d => ({name:'img',data:d}));
+  renderImgs();
+  
+  gv_set('f-note-prod', r.noteProd);
+  gv_set('f-note-sales', r.noteSales);
+  gv_set('f-supervisor', r.supervisor);
+  gv_set('f-sewers', r.sewers);
+  gv_set('f-rate', r.rate);
+  gv_set('f-est-wage', r.estWage);
+  gv_set('f-confirmed', r.confirmed);
+  
+  // Handle both old grouped format and new flat format
+  const raw = r.steps || [];
+  if (raw.length && raw[0].subSteps) {
+    // old format: convert to flat
+    stepRows = [];
+    raw.forEach(g => g.subSteps.forEach(s => stepRows.push({step: g.part + ' ' + s.action, machine: s.machine, time: 0, workers: 1, note: s.detail||''})));
+  } else {
+    stepRows = JSON.parse(JSON.stringify(raw));
+  }
+  selectedPart = ""; selectedAction = ""; selectedMachine = "";
+  renderInputTags();
+  renderSteps();
+  
+  gv_set('f-warning', r.warning);
+  gv_set('f-solution', r.solution);
+  
+  const a = r.actual || {};
+  gv_set('f-start-dt', a.start);
+  gv_set('f-end-dt', a.end);
+  gv_set('f-actual-sewers', a.sewers);
+  gv_set('f-actual-days', a.days);
+  gv_set('f-actual-rate', a.rate);
+  gv_set('f-actual-wage', a.wage);
+  gv_set('f-actual-total', a.total);
+  gv_set('f-remark', a.remark);
+  
+  switchTab('form');
+  showToast('โหลดข้อมูลเรียบร้อย');
+}
+function gv_set(id, v) { const e=document.getElementById(id); if(e) e.value = v||''; }
+function gc_set(id, v) { const e=document.getElementById(id); if(e) e.checked = !!v; }
+
+/* ── Stats ── */
+function renderStats() {
+  const tot = records.length;
+  let sTot=0, qTot=0;
+  const groups = {};
+  
+  records.forEach(r => {
+    const rawSteps = r.steps || [];
+    const totalSubSteps = rawSteps[0]?.subSteps ? rawSteps.reduce((s,g)=>s+(g.subSteps?.length||0),0) : rawSteps.length;
+    sTot += totalSubSteps;
+    qTot += parseInt(r.qty||0, 10);
+    const n = r.brand || r.model || r.customer || 'ไม่ระบุ';
+    if(!groups[n]) groups[n]={count:0, qty:0};
+    groups[n].count++;
+    groups[n].qty += parseInt(r.qty||0, 10);
+  });
+  
+  document.getElementById('st-total').innerText = tot;
+  document.getElementById('st-steps').innerText = sTot;
+  document.getElementById('st-avg').innerText = tot ? (sTot/tot).toFixed(1) : 0;
+  document.getElementById('st-qty').innerText = qTot.toLocaleString();
+  
+  const arr = Object.keys(groups).map(k => ({name:k, ...groups[k]})).sort((a,b)=>b.count-a.count);
+  const c = document.getElementById('typeStatsList');
+  const e = document.getElementById('emptyStats');
+  
+  if(!arr.length) { c.innerHTML=''; e.style.display='block'; return; }
+  e.style.display='none';
+  c.innerHTML = arr.map(x => `
+    <div class="type-row">
+      <div class="ic">👕</div>
+      <div class="inf"><div class="nm">${esc(x.name)}</div><div class="dt">ผลิต ${x.qty.toLocaleString()} ตัว</div></div>
+      <div class="type-badge"><span class="tn">${x.count}</span><span class="tl">ใบดี</span></div>
+    </div>
+  `).join('');
+}
+
+/* ── PDF Generation ── */
+async function generatePDF(idx) {
+  const d = records[idx];
+  showToast('กำลังสร้าง PDF...');
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+    
+    doc.setFontSize(16);
+    doc.text("Apparel Creations - Production Sheet", 10, 20);
+    doc.setFontSize(12);
+    doc.text(`Brand: ${d.brand || '-'}`, 10, 30);
+    doc.text(`Customer: ${d.customer || '-'}`, 10, 40);
+    doc.text(`Model: ${d.model || '-'}`, 10, 50);
+    doc.text(`Qty: ${d.qty || 0}`, 10, 60);
+    
+    const fileName = `Sheet_${d.brand||'Brand'}_${d.model||'Model'}.pdf`;
+    doc.save(fileName);
+    showToast('ดาวน์โหลดสำเร็จ');
+  } catch (err) {
+    console.error(err);
+    showToast('เกิดข้อผิดพลาดในการสร้าง PDF', true);
+  }
+}
+
+// เรียกอินพุตขึ้นมาแสดงตอนเริ่มต้นแอป
+loadMasterFromStorage();
+renderFormDropdowns();
+renderSteps();
+</script>
+</body>
+</html>
